@@ -1,0 +1,8 @@
+@import "/src/styles/common_variables.scss";
+
+.footer {
+    background-color: $main_color;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}

@@ -1,0 +1,49 @@
+@import "/src/styles/common_variables.scss";
+
+.header {
+    background-color: $main_color;
+    height: 100px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.title_content {
+    margin: auto 16px;
+    display: flex;
+
+    .logo {
+        margin: auto 0px;
+    }
+
+    .title {
+        text-align: center;
+
+        p {
+            font-size: 48px;
+            margin: 0px;
+            margin-left: 16px;
+        }
+    }
+}
+
+.account_content {
+    display: flex;
+    margin: auto 16px;
+
+    .account_icon {
+        img {
+            display: block;
+        }
+
+        margin: auto 0;
+    }
+
+    .greeting {
+        margin: auto 8px;
+    }
+
+    p {
+        font-size: 16px;
+        margin: 0px;
+    }
+}

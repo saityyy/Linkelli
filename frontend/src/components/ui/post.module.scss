@@ -1,0 +1,108 @@
+@import "/src/styles/common_variables.scss";
+
+.post_container {
+    background-color: white;
+    border: 1px solid gray;
+    border-radius: 4px;
+    margin: 8px;
+    padding: 16px;
+}
+
+.poster_content {
+    .poster_info {
+        display: flex;
+        color: $main_char_color;
+
+        img {
+            margin: auto 0px;
+            border-radius: 4px;
+            border: 1px solid white;
+
+            &:hover {
+                transition: background-color 0.3s ease, border-color 0.3s ease;
+                background-color: $hover_background_color;
+                border: 1px solid $hover_border_color;
+            }
+        }
+
+        a {
+            text-decoration: none;
+            font-size: 18px;
+            color: $main_char_color;
+            margin: auto 8px;
+            font-weight: bolder;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+
+        p {
+            color: $sub_char_color;
+            margin: auto 0px;
+        }
+
+    }
+
+
+    .post_info {
+        margin: 16px;
+
+        span {
+            list-style: none;
+            padding: 0;
+            word-break: break-all;
+
+            a {
+                text-decoration: none;
+                color: $main_char_color;
+
+                &:hover {
+                    text-decoration: underline;
+                    color: $hover_char_color;
+
+                }
+            }
+        }
+
+        p {
+            word-wrap: break-word;
+        }
+
+    }
+}
+
+.target_contents {
+    ul {
+        padding: 0px;
+
+        li {
+            list-style: none;
+            padding: 0;
+        }
+    }
+
+    a {
+        display: flex;
+        text-decoration: none;
+        color: $main_char_color;
+        border-radius: 4px;
+        border: 1px solid white;
+
+        img {
+            margin: auto 8px;
+        }
+
+        p {
+            font-size: 1rem;
+            width: 90%;
+            word-wrap: break-word;
+        }
+
+        &:hover {
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+            background-color: $hover_background_color;
+            border: 1px solid $hover_border_color;
+        }
+    }
+}
