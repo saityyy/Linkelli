@@ -48,7 +48,6 @@ INSTALLED_APPS = [
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
-    'api.adapters.UserAccount.Adapter'
 ]
 
 MIDDLEWARE = [
@@ -69,10 +68,12 @@ ACCOUNT_LOGOUT_REDIRECT_URL = 'http://127.0.0.1:3000/'
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = "None"
 ACCESS_CONTROL_ALLOW_ORIGIN = "*"
+ACCESS_CONTROL_ALLOW_METHOD = ["*"]
 CORS_ALLOW_HEADERS = [
+    "Content-type",
     "x-csrftoken"
 ]
-CORS_ALLOW_METHODS = "*"
+CORS_ALLOW_METHODS = ["*"]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
@@ -161,6 +162,3 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# AUTH_USER_MODEL = 'allauth.socialaccount.models.SocialAccount'
-SOCIALACCOUNT_ADAPTER = 'accounts.social_auth.UserAccountAdapter'

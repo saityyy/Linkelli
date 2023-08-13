@@ -14,6 +14,8 @@ from django.contrib import auth
 
 
 class UserSerializer(serializers.ModelSerializer):
+    # user_info = UserInfoSerializer()
+
     class Meta:
         model = SocialAccount
         fields = [
@@ -25,35 +27,24 @@ class UserSerializer(serializers.ModelSerializer):
             "extra_data"
         ]
 
-
-class UserInfoSerializer(serializers.ModelSerializer):
-    user = serializers.SerializerMethodField()
-    display_name = serializers.CharField(required=False, allow_blank=True)
-    icon_image = serializers.CharField(required=False, allow_blank=True)
-
-    class Meta:
-        model = UserInfo
-        fields = [
-            "user",
-            "display_name",
-            "icon_image",
-        ]
-
     def get_user(self, request):
         print("get_user")
         print(request.user.uid)
-        # if not hasattr(request, '_cached_user'):
-        # request._cached_user = auth.get_user(request)
-        # print(request._cached_user)
         return "test"
 
     def create(self, validated_data):
-        user = None
-        request = self.context.get("request")
-        user = auth.get_user(request)
-        print(user.username)
-        validated_data["user"] = user
-        return UserInfo.objects.create(**validated_data)
+        print(validated_data)
+        ret = super().create(validated_data)
+        return ret
+
+
+class UserInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserInfo
+        fields = [
+            "display_name",
+            "icon_url"
+        ]
 
 
 class LinkSerializer(serializers.ModelSerializer):
@@ -81,7 +72,7 @@ class KeywordSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
-    post_sender = UserInfoSerializer(many=True)
+    post_sender = UserSerializer(many=True)
     links = LinkSerializer(many=True)
     keywords = KeywordSerializer(many=True)
 

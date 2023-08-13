@@ -1,6 +1,17 @@
-import uuid
 from django.db import models
 from allauth.socialaccount.models import SocialAccount
+
+
+class UserInfo(models.Model):
+    user = models.OneToOneField(
+        SocialAccount,
+        on_delete=models.CASCADE,
+        primary_key=True)
+    display_name = models.CharField(max_length=30)
+    icon_url = models.CharField(max_length=100)
+
+    def __str__(self):
+        return str(self.display_name)
 
 
 class Post(models.Model):
@@ -16,18 +27,6 @@ class Post(models.Model):
 
     def __str__(self):
         return str(self.post_id)
-
-
-class UserInfo(models.Model):
-    user = models.OneToOneField(
-        SocialAccount,
-        on_delete=models.CASCADE,
-        primary_key=True)
-    display_name = models.CharField(max_length=20, default="guest")
-    icon_image = models.CharField(max_length=30, default="no_image.png")
-
-    def __str__(self):
-        return str(self.user_id)
 
 
 class Link(models.Model):
