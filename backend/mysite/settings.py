@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
+    'api.adapters.UserAccount.Adapter'
 ]
 
 MIDDLEWARE = [
@@ -160,3 +161,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# AUTH_USER_MODEL = 'allauth.socialaccount.models.SocialAccount'
+SOCIALACCOUNT_ADAPTER = 'accounts.social_auth.UserAccountAdapter'

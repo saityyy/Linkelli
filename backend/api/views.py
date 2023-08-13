@@ -3,9 +3,9 @@ import json
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from allauth.socialaccount.models import SocialAccount
-from .models import Post, Link
+from .models import Post, Link, UserInfo
 from rest_framework import viewsets, permissions
-from .serializers import UserSerializer, PostSerializer
+from .serializers import UserSerializer, PostSerializer, UserInfoSerializer
 from django.utils import timezone
 from django.middleware.csrf import get_token
 from rest_framework.decorators import api_view
@@ -50,21 +50,32 @@ class SetUserViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
+class SetUserInfoViewSet(viewsets.ModelViewSet):
+    queryset = UserInfo.objects.all()
+    serializer_class = UserInfoSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+
+
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
-    @action(detail=True, methods=["get"])
-    def get_post(self, request, pk=None):
-        posts = self.get_object()
-        print("GET")
-        print(posts)
-        return PostSerializer(request.data)
+    def get_queryset(self):
+        return Post.objects.all()[0:1]
 
-    @action(detail=True, methods=["post"])
-    def set_post(self, request, pk=None):
-        posts = self.get_object()
-        print("POST")
-        print(posts)
-        return PostSerializer(request.data)
+
+class GetPostViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+    def get_queryset(self):
+        print(self.request.user.uid.all())
+        q_param = self.request.query_params
+        start, num = 0, 3
+        if "start" in q_param:
+            start = int(self.request.query_params.get("start"))
+        if "num" in q_param:
+            num = int(self.request.query_params.get("num"))
+        sum_record = len(Post.objects.all())
+        return Post.objects.all()[start:min(start + num, sum_record)]

@@ -8,8 +8,9 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from django.http import HttpResponse
 from allauth.socialaccount.models import SocialAccount
-from .models import Post, Link, Keyword
+from .models import Post, Link, Keyword, UserInfo
 from rest_framework import serializers
+from django.contrib import auth
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -23,6 +24,36 @@ class UserSerializer(serializers.ModelSerializer):
             "date_joined",
             "extra_data"
         ]
+
+
+class UserInfoSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+    display_name = serializers.CharField(required=False, allow_blank=True)
+    icon_image = serializers.CharField(required=False, allow_blank=True)
+
+    class Meta:
+        model = UserInfo
+        fields = [
+            "user",
+            "display_name",
+            "icon_image",
+        ]
+
+    def get_user(self, request):
+        print("get_user")
+        print(request.user.uid)
+        # if not hasattr(request, '_cached_user'):
+        # request._cached_user = auth.get_user(request)
+        # print(request._cached_user)
+        return "test"
+
+    def create(self, validated_data):
+        user = None
+        request = self.context.get("request")
+        user = auth.get_user(request)
+        print(user.username)
+        validated_data["user"] = user
+        return UserInfo.objects.create(**validated_data)
 
 
 class LinkSerializer(serializers.ModelSerializer):
@@ -50,7 +81,7 @@ class KeywordSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
-    post_sender = serializers.StringRelatedField(many=False)
+    post_sender = UserInfoSerializer(many=True)
     links = LinkSerializer(many=True)
     keywords = KeywordSerializer(many=True)
 
