@@ -3,11 +3,10 @@ from allauth.socialaccount.models import SocialAccount
 
 
 class UserInfo(models.Model):
+    display_name = models.CharField(max_length=30, primary_key=True)
     user = models.OneToOneField(
         SocialAccount,
-        on_delete=models.CASCADE,
-        primary_key=True)
-    display_name = models.CharField(max_length=30)
+        on_delete=models.CASCADE)
     icon_url = models.CharField(max_length=100)
 
     def __str__(self):
@@ -18,9 +17,9 @@ class Post(models.Model):
     post_id = models.BigAutoField(primary_key=True)
     created = models.DateTimeField(auto_now_add=True)
     post_sender = models.ForeignKey(
-        SocialAccount,
+        UserInfo,
         related_name="post_sender",
-        blank=True,
+        blank=False,
         null=True,
         on_delete=models.CASCADE)
     comment = models.CharField(max_length=100, default="")

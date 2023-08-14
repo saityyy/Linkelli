@@ -1,3 +1,4 @@
+from pprint import pprint
 from allauth.account.forms import LoginForm
 import json
 from django.shortcuts import render, redirect
@@ -89,10 +90,40 @@ class UserViewSet(viewsets.ModelViewSet):
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return Post.objects.all()[0:1]
+
+    @action(methods=["get"], detail=True)
+    def get_post(self, request, pk=None):
+        print(request.query_params)
+        q = request.query_params
+        start, end = int(q["start"]), int(q["start"]) + int(q["num"])
+        sum_record = len(Post.objects.all())
+        if end > sum_record:
+            return Response([])
+        start = min(start, sum_record)
+        end = min(end, sum_record)
+        posts = Post.objects.all()[start:end]
+        serializer = self.get_serializer(posts, many=True)
+        print(serializer.data)
+        return Response(serializer.data)
+
+    @action(methods=["post"], detail=True,
+            permission_classes=[IsAuthenticated])
+    def set_post(self, request, pk=None):
+        post_data = request.data
+        user = SocialAccount.objects.get(user=request.user)
+        user_info = UserInfoSerializer(
+            UserInfo.objects.get(user=user)).data
+        post_data["post_sender"] = user_info
+        serializer = PostSerializer(data=post_data)
+        print(serializer.is_valid())
+        print(serializer.errors)
+        print(serializer.validated_data)
+        serializer.save()
+        return Response({"status": "set post data"})
 
 
 class GetPostViewSet(viewsets.ReadOnlyModelViewSet):
