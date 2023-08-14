@@ -63,13 +63,16 @@ class UserViewSet(viewsets.ModelViewSet):
         if request.user.is_authenticated:
             social_account = SocialAccount.objects.get(user=request.user)
             user_info = UserInfo.objects.get(user=social_account)
-            serializer = UserInfoSerializer(user_info)
-            print(serializer.data)
-            return JsonResponse(serializer.data, safe=False)
+            result = UserInfoSerializer(user_info).data
+            _ = result.pop("user")
+            _ = result.pop("user_info_id")
+            print(result)
+            return JsonResponse(result, safe=False)
         else:
-            guest_account = UserSerializer().data
-            guest_account["extra_data"] = '{}'
-            print(guest_account)
+            guest_account = {
+                "display_name": "Guest",
+                "icon_url": None
+            }
             return JsonResponse(guest_account, safe=False)
 
     @action(methods=["post"], detail=True,
@@ -83,7 +86,8 @@ class UserViewSet(viewsets.ModelViewSet):
         if "display_name"not in user_settings or "icon_url"not in user_settings:
             user_settings = setting_items
         user = SocialAccount.objects.get(user=request.user)
-        UserInfo.objects.update_or_create(user=user, defaults=user_settings)
+        UserInfo.objects.update_or_create(
+            user=user, defaults=user_settings)
         return Response({"status": "userinfo set"})
 
 
@@ -95,20 +99,20 @@ class PostViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Post.objects.all()[0:1]
 
-    @action(methods=["get"], detail=True)
+    @action(methods=["get"], detail=False)
     def get_post(self, request, pk=None):
         print(request.query_params)
         q = request.query_params
         start, end = int(q["start"]), int(q["start"]) + int(q["num"])
         sum_record = len(Post.objects.all())
-        if end > sum_record:
-            return Response([])
         start = min(start, sum_record)
         end = min(end, sum_record)
         posts = Post.objects.all()[start:end]
-        serializer = self.get_serializer(posts, many=True)
-        print(serializer.data)
-        return Response(serializer.data)
+        result = self.get_serializer(posts, many=True).data
+        for i in range(len(result)):
+            _ = result[i]["post_sender"].pop("user_info_id")
+            _ = result[i]["post_sender"].pop("user")
+        return Response(result)
 
     @action(methods=["post"], detail=True,
             permission_classes=[IsAuthenticated])

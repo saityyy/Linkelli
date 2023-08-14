@@ -40,6 +40,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserInfoSerializer(serializers.ModelSerializer):
+    user_info_id = serializers.IntegerField()
     user = UserSerializer(many=False, read_only=True)
     display_name = serializers.CharField(required=True, allow_blank=False)
     icon_url = serializers.CharField(required=True, allow_blank=False)
@@ -93,9 +94,9 @@ class PostSerializer(serializers.ModelSerializer):
         print("create")
         links_data = validated_data.pop("links")
         keywords_data = validated_data.pop("keywords")
-        display_name = validated_data["post_sender"]["display_name"]
+        user_info_id = validated_data["post_sender"]["user_info_id"]
         validated_data["post_sender"] = UserInfo.objects.get(
-            display_name=display_name)
+            user_info_id=user_info_id)
         print(validated_data["post_sender"])
 
         post_object = Post.objects.create(**validated_data)
