@@ -1,0 +1,18 @@
+.main_container {
+  display: flex;
+  justify-content: center;
+
+  header {
+    text-align: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+  }
+
+
+  main {
+    width: 1400px;
+    margin-left: 230px;
+    background-color: #aaaaaa;
+  }
+}

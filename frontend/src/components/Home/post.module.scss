@@ -1,4 +1,4 @@
-@import "/src/styles/common_variables.scss";
+@import "../../common_variables.scss";
 
 .post_container {
     background-color: white;
@@ -27,7 +27,7 @@
 
         a {
             text-decoration: none;
-            font-size: 18px;
+            font-size: $pc_text_size;
             color: $main_char_color;
             margin: auto 8px;
             font-weight: bolder;
@@ -56,6 +56,7 @@
             a {
                 text-decoration: none;
                 color: $main_char_color;
+                font-size: $pc_text_size;
 
                 &:hover {
                     text-decoration: underline;
@@ -67,6 +68,7 @@
 
         p {
             word-wrap: break-word;
+            font-size: $pc_text_size;
         }
 
     }
@@ -94,7 +96,7 @@
         }
 
         p {
-            font-size: 1rem;
+            font-size: $pc_text_size;
             width: 90%;
             word-wrap: break-word;
         }
