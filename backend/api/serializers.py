@@ -8,11 +8,15 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from django.http import HttpResponse
 from allauth.socialaccount.models import SocialAccount
-from .models import Post, Link, Keyword
+from .models import Post, Link, Keyword, UserInfo
 from rest_framework import serializers
+from django.contrib import auth
+from rest_framework.response import Response
 
 
 class UserSerializer(serializers.ModelSerializer):
+    # user_info = UserInfoSerializer()
+
     class Meta:
         model = SocialAccount
         fields = [
@@ -23,6 +27,26 @@ class UserSerializer(serializers.ModelSerializer):
             "date_joined",
             "extra_data"
         ]
+
+    def get_user(self, request):
+        print("get_user")
+        print(request.user.uid)
+        return "test"
+
+    def create(self, validated_data):
+        print(validated_data)
+        ret = super().create(validated_data)
+        return ret
+
+
+class UserInfoSerializer(serializers.ModelSerializer):
+    user = UserSerializer(many=False, read_only=True)
+    display_name = serializers.CharField(required=True, allow_blank=False)
+    icon_url = serializers.CharField(required=True, allow_blank=False)
+
+    class Meta:
+        model = UserInfo
+        fields = "__all__"
 
 
 class LinkSerializer(serializers.ModelSerializer):
@@ -50,7 +74,7 @@ class KeywordSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
-    post_sender = serializers.StringRelatedField(many=False)
+    post_sender = UserInfoSerializer(many=False)
     links = LinkSerializer(many=True)
     keywords = KeywordSerializer(many=True)
 
@@ -66,8 +90,14 @@ class PostSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
+        print("create")
         links_data = validated_data.pop("links")
         keywords_data = validated_data.pop("keywords")
+        display_name = validated_data["post_sender"]["display_name"]
+        validated_data["post_sender"] = UserInfo.objects.get(
+            display_name=display_name)
+        print(validated_data["post_sender"])
+
         post_object = Post.objects.create(**validated_data)
         for link_data in links_data:
             link_data["post"] = post_object
@@ -78,7 +108,7 @@ class PostSerializer(serializers.ModelSerializer):
         for keyword_data in keywords_data:
             keyword_data["post"] = post_object
             Keyword.objects.create(**keyword_data)
-        return Post.objects.create(**validated_data)
+        return Response({"status": "set post"})
 
 
 def fetch_site_icon(url):
