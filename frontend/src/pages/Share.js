@@ -49,7 +49,7 @@ export default function Share() {
         console.log(body)
         const response = await set_post(body)
         console.log(response)
-
+        if (response.status === 200) window.location.href = "/"
     }
 
     return (

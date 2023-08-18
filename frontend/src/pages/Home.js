@@ -5,14 +5,19 @@ import styles from "./home.module.scss"
 import get_post from "../components/functional/get_post";
 
 export default function Home() {
-    const add_page = 1
+    const add_page = 2
     const [posts, setPosts] = useState([]);
     const [page, setPage] = useState(0);
     const fetchPost = async (start) => {
         const data = await get_post(start, add_page)
         console.log(data)
-        setPosts((prev) => [...prev, ...data])
-        console.log(`posts.length${posts.length}`)
+        setPosts((prev) => {
+            //useEffectが二回呼ばれ,同じ投稿が追加されるのを防ぐ
+            const prevJSON = JSON.stringify(prev.slice(-data.length))
+            const dataJSON = JSON.stringify(data)
+            if (prevJSON !== dataJSON) return [...prev, ...data]
+            else return prev
+        })
     }
     useEffect(() => {
         fetchPost(page);

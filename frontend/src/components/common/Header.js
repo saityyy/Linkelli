@@ -5,10 +5,10 @@ import styles from "./header.module.scss"
 export default function Header() {
     const signInUrl = "http://127.0.0.1:8000/accounts/google/login/"
     const common_html = (
-        <div className={styles.logo_container}>
+        <a href="/" className={styles.logo_container}>
             <img src={"/logo.svg"} width={40} height={40} alt={"logo"} />
-            <p className="font-bold">Linkelli</p>
-        </div>
+            <p>Linkelli</p>
+        </a>
     )
     const [username, setUsername] = useState("loading")
     const [avator, setAvator] = useState("")

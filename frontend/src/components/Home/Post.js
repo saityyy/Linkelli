@@ -14,6 +14,12 @@ const Post = (({ post, newLimit, isLast }) => {
         });
         observer.observe(postRef.current);
     }, [isLast]);
+    const y = new Date(post.created).getFullYear()
+    const m = new Date(post.created).getMonth()
+    const d = new Date(post.created).getDate()
+    const hour = new Date(post.created).getHours()
+    const minute = new Date(post.created).getMinutes()
+    const post_created_time = `${y} ${m}/${d}  ${hour}:${minute}`
     return (
         <div ref={postRef} className={styles.post_container}>
             <div className={styles.poster_content}>
@@ -22,7 +28,7 @@ const Post = (({ post, newLimit, isLast }) => {
                         <img src={post.post_sender.icon_url} width={30} height={30} alt={"website_image"} />
                     </a>
                     <a href="/">{post.post_sender.display_name}</a>
-                    <p>7.20 3:29</p>
+                    <p>{post_created_time}</p>
                 </div>
                 <div className={styles.post_info}>
                     <p>
