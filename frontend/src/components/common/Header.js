@@ -22,7 +22,6 @@ export default function Header() {
         }
         f()
     }, []);
-    console.log(username)
     if (username === "loading") {
         return (
             <div className={styles.header_container}>

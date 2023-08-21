@@ -15,10 +15,10 @@ const Post = (({ post, newLimit, isLast }) => {
         observer.observe(postRef.current);
     }, [isLast]);
     const y = new Date(post.created).getFullYear()
-    const m = new Date(post.created).getMonth()
+    const m = new Date(post.created).getMonth() + 1
     const d = new Date(post.created).getDate()
     const hour = new Date(post.created).getHours()
-    const minute = new Date(post.created).getMinutes()
+    const minute = (new Date(post.created).getMinutes()).toString().padStart(2, "0")
     const post_created_time = `${y} ${m}/${d}  ${hour}:${minute}`
     return (
         <div ref={postRef} className={styles.post_container}>

@@ -14,16 +14,12 @@ export default async function get_user_info() {
             method: "GET",
             mode: "cors",
             credentials: 'include',
-            redirect: 'follow',
             headers: {
                 "x-csrftoken": csrftoken["x-csrftoken"],
             },
         })
         .then((res) => {
-            if (res.redirected) window.location.href = res.url
             return res.json()
         });
-    if (data.redirect) window.location.href = data.redirect
-    console.log(data)
     return data
 }

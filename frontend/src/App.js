@@ -19,7 +19,7 @@ function App() {
             <Route path="" element={<Home />} />
             <Route path="share" element={<Share />} />
             <Route path="user/settings" element={<Settings />} />
-            <Route path="user/:userName" element={<User />} />
+            <Route path="user/:display_name" element={<User />} />
           </Routes>
         </Router>
       </main>
