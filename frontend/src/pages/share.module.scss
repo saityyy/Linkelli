@@ -1,5 +1,10 @@
 @import "../common_variables.scss";
 
+.share_container {
+    p {
+        cursor: default;
+    }
+}
 
 .send_post_button {
     height: 40px;

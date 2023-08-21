@@ -5,6 +5,7 @@ import Header from "components/common/Header"
 import Home from "./pages/Home"
 import User from "./pages/User"
 import Share from "./pages/Share"
+import Settings from "./pages/Settings"
 
 function App() {
   return (
@@ -17,7 +18,8 @@ function App() {
           <Routes>
             <Route path="" element={<Home />} />
             <Route path="share" element={<Share />} />
-            <Route path=":userName" element={<User />} />
+            <Route path="user/settings" element={<Settings />} />
+            <Route path="user/:userName" element={<User />} />
           </Routes>
         </Router>
       </main>

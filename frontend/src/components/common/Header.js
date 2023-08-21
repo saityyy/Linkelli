@@ -3,7 +3,9 @@ import get_user_info from "../functional/get_user_info"
 import styles from "./header.module.scss"
 
 export default function Header() {
-    const signInUrl = "http://127.0.0.1:8000/accounts/google/login/"
+    const signInUrl =
+        process.env.REACT_APP_API_SERVER_ORIGIN
+        + "/accounts/google/login/"
     const common_html = (
         <a href="/" className={styles.logo_container}>
             <img src={"/logo.svg"} width={40} height={40} alt={"logo"} />
@@ -39,8 +41,8 @@ export default function Header() {
                     <div className={styles.greeting}>
                         <p>Hello,<br /> {username}!</p>
                     </div>
-                    <a href={"/" + username.toString()} className={styles.account_icon}>
-                        <img src={avator} width={40} height={40} alt="account icon" loading="lazy" />
+                    <a href={"/user/" + username.toString()} className={styles.account_icon}>
+                        <img src={avator} width={40} alt="account icon" />
                     </a>
                 </div>
                 <div className={styles.post_button}>

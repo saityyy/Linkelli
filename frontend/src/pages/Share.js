@@ -1,6 +1,9 @@
 import React from "react"
 import set_post from "../components/functional/set_post"
 import styles from "./share.module.scss"
+import Keywords from "../components/Share/Keywords"
+import Links from "../components/Share/Links"
+import Comment from "../components/Share/Comment"
 
 export default function Share() {
     let formdata_ini = localStorage.getItem("formdata")
@@ -30,13 +33,23 @@ export default function Share() {
             return ret;
         })
     }
-    const add_input = (input_content) => {
+    const addInput = (input_content) => {
         setFormdata((prev) => {
+            if (prev[input_content].length >= 5) return prev
             const ret = JSON.parse(JSON.stringify(prev))//deep copy
             let new_input = {}
             if (input_content === "keywords") new_input.keyword = ""
             if (input_content === "links") new_input.link = ""
             ret[input_content].push(new_input)
+            localStorage.setItem("formdata", JSON.stringify(ret))
+            return ret
+        })
+    }
+    const reduceInput = (input_content) => {
+        setFormdata((prev) => {
+            if (prev[input_content].length === 1) return prev
+            const ret = JSON.parse(JSON.stringify(prev))//deep copy
+            ret[input_content].pop()
             localStorage.setItem("formdata", JSON.stringify(ret))
             return ret
         })
@@ -53,41 +66,21 @@ export default function Share() {
     }
 
     return (
-        <div>
-            <h1>Share</h1>
-            <div>
-                <p>input comment</p>
-                <input className={"comment_none"}
-                    type="text" name="comment" value={formdata.comment} onChange={(onChange)} />
-            </div>
-            <div>
-                <p>input keywords</p>
-                <div>
-                    <button onClick={() => add_input("keywords")}>add input form</button>
-                    <ul>
-                        {formdata.keywords.map((keyword, i) => (
-                            <li key={i.toString()}>
-                                <input className={"keywords_" + i.toString()}
-                                    type="text" name="keyword" value={keyword.keyword} onChange={onChange} />
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            </div>
-            <div>
-                <p>input url link</p>
-                <div>
-                    <button onClick={() => add_input("links")}>add input form</button>
-                    <ul>
-                        {formdata.links.map((link, i) => (
-                            <li key={i.toString()}>
-                                <input className={"links_" + i.toString()}
-                                    type="text" name="link" value={link.link} onChange={onChange} />
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            </div>
+        <div className={styles.share_container}>
+            <p>Share</p>
+            <Comment
+                comment={formdata.comment}
+                onChange={onChange} />
+            <Keywords
+                keywords={formdata.keywords}
+                addInput={addInput}
+                reduceInput={reduceInput}
+                onChange={onChange} />
+            <Links
+                links={formdata.links}
+                addInput={addInput}
+                reduceInput={reduceInput}
+                onChange={onChange} />
             <div className={styles.send_post_button}>
                 <p onClick={send_post}>
                     Share your linkelli
