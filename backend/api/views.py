@@ -10,6 +10,7 @@ from .models import Post, Link, UserInfo
 from rest_framework import viewsets, permissions
 from .serializers import UserSerializer, PostSerializer, UserInfoSerializer
 from django.utils import timezone
+from django.shortcuts import redirect
 from django.middleware.csrf import get_token
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -62,20 +63,29 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(methods=["get"], detail=True)
     def get_user_profile(self, request, pk=None):
-        print(request.content_type)
         if request.user.is_authenticated:
-            social_account = SocialAccount.objects.get(user=request.user)
+            print(request.META.get("HTTP_REFERER"))
+            print("authenticated")
+            user = SocialAccount.objects.get(user=request.user)
+            uid, provider = user.uid, user.provider
             try:
-                user_info = UserInfo.objects.get(user=social_account)
+                user_info = UserInfo.objects.get(user=user)
             except ObjectDoesNotExist:
+                temp_display_name = uuid.uuid3(
+                    uuid.NAMESPACE_X500,
+                    uid + provider).hex
                 return JsonResponse(
-                    {"redirect": "http://localhost:3000/user/settings"}, status=status.HTTP_200_OK)
+                    {"exist_user_info": False,
+                     "display_name": temp_display_name[:10],
+                     "icon_url": "http://127.0.0.1:8000/static/images/user_icons/no_image.png"
+                     }, status=status.HTTP_200_OK)
             result = UserInfoSerializer(user_info).data
             _ = result.pop("user")
             _ = result.pop("user_info_id")
-            print(result)
+            result["exist_user_info"] = True
             return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
         else:
+            print("not authenticated")
             guest_account = {
                 "display_name": "Guest",
                 "icon_url": None
@@ -130,7 +140,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.order_by("-created").all()
+    queryset = Post.objects.all()
     serializer_class = PostSerializer
     # permission_classes = [permissions.IsAuthenticated]
 
@@ -147,6 +157,26 @@ class PostViewSet(viewsets.ModelViewSet):
         end = min(end, sum_record)
         posts = Post.objects.all().order_by("-created")[start:end]
         result = self.get_serializer(posts, many=True).data
+        for i in range(len(result)):
+            _ = result[i]["post_sender"].pop("user_info_id")
+            _ = result[i]["post_sender"].pop("user")
+        res = Response(result, status=status.HTTP_200_OK)
+        return res
+
+    @action(methods=["get"], detail=True)
+    def get_user_post(self, request, pk=None):
+        print(pk)
+        q = request.query_params
+        start, end = int(q["start"]), int(q["start"]) + int(q["num"])
+        # display_name=q["display_name"]
+        post_sender = UserInfo.objects.get(display_name=pk)
+        posts = Post.objects.filter(post_sender=post_sender)
+        sum_record = len(posts)
+        print(sum_record)
+        start = min(start, sum_record)
+        end = min(end, sum_record)
+        show_posts = posts.order_by("-created")[start:end]
+        result = self.get_serializer(show_posts, many=True).data
         for i in range(len(result)):
             _ = result[i]["post_sender"].pop("user_info_id")
             _ = result[i]["post_sender"].pop("user")

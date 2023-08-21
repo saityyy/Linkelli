@@ -3,7 +3,7 @@ from allauth.socialaccount.models import SocialAccount
 
 
 class UserInfo(models.Model):
-    user_info_id = models.BigAutoField(primary_key=True, default=1)
+    user_info_id = models.BigAutoField(primary_key=True)
     display_name = models.CharField(max_length=30, unique=True)
     user = models.OneToOneField(
         SocialAccount,
