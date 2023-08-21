@@ -42,7 +42,12 @@ class UserSerializer(serializers.ModelSerializer):
 class UserInfoSerializer(serializers.ModelSerializer):
     user_info_id = serializers.IntegerField()
     user = UserSerializer(many=False, read_only=True)
-    display_name = serializers.CharField(required=True, allow_blank=False)
+    display_name = serializers.CharField(
+        min_length=1,
+        max_length=20,
+        required=True,
+        allow_blank=False
+    )
     icon_url = serializers.CharField(required=True, allow_blank=False)
 
     class Meta:

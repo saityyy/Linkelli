@@ -1,8 +1,10 @@
-from pprint import pprint
+import re
+import uuid
 from allauth.account.forms import LoginForm
-import json
+import os
+import uuid
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from allauth.socialaccount.models import SocialAccount
 from .models import Post, Link, UserInfo
 from rest_framework import viewsets, permissions
@@ -12,7 +14,14 @@ from django.middleware.csrf import get_token
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework import status
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie, vary_on_headers
 from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.decorators import parser_classes
+from rest_framework.parsers import MultiPartParser, FormParser
+from django.core.files.storage import FileSystemStorage
 
 
 def csrf(request):
@@ -38,36 +47,34 @@ def get_user_profile(request):
         return JsonResponse(UserSerializer().data, safe=False)
 
 
-# @api_view(['GET'])
-# def get_post(request):
-    # print(request.GET)
-    # posts = Post.objects.all()
-    # print(posts)
-    # serializer = PostSerializer(posts)
-    # return HttpResponse(serializer.data)
-
 class SetUserInfoViewSet(viewsets.ModelViewSet):
     queryset = SocialAccount.objects.all()
     serializer_class = UserInfoSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
+@parser_classes([MultiPartParser, FormParser])
 class UserViewSet(viewsets.ModelViewSet):
     queryset = SocialAccount.objects.all()
     serializer_class = UserSerializer
     # permission_classes = [permissions.IsAuthenticated]
-    http_method_names = ['get', "post"]
+    ttp_method_names = ['get', "post"]
 
     @action(methods=["get"], detail=True)
     def get_user_profile(self, request, pk=None):
+        print(request.content_type)
         if request.user.is_authenticated:
             social_account = SocialAccount.objects.get(user=request.user)
-            user_info = UserInfo.objects.get(user=social_account)
+            try:
+                user_info = UserInfo.objects.get(user=social_account)
+            except ObjectDoesNotExist:
+                return JsonResponse(
+                    {"redirect": "http://localhost:3000/user/settings"}, status=status.HTTP_200_OK)
             result = UserInfoSerializer(user_info).data
             _ = result.pop("user")
             _ = result.pop("user_info_id")
             print(result)
-            return JsonResponse(result, safe=False)
+            return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
         else:
             guest_account = {
                 "display_name": "Guest",
@@ -79,20 +86,51 @@ class UserViewSet(viewsets.ModelViewSet):
             permission_classes=[IsAuthenticated])
     def set_user_info(self, request, pk=None):
         setting_items = {
-            "display_name": "test",
-            "icon_url": "https://cdn-icons-png.flaticon.com/512/61/61205.png"
+            "display_name": "",
+            "icon_url": ""
         }
-        user_settings = request.data
-        if "display_name"not in user_settings or "icon_url"not in user_settings:
-            user_settings = setting_items
         user = SocialAccount.objects.get(user=request.user)
+        uid, provider = user.uid, user.provider
+        if "display_name" not in request.data:
+            return Response({"error_code": "FieldNotExist"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        if "icon_image_file" not in request.data:
+            return Response({"error_code": "FieldNotExist"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        img = request.data["icon_image_file"]
+        if not hasattr(img, "content_type"):
+            return Response({"error_code": "InvalidFileData"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        if not (img.content_type in ["image/png", "image/jpeg", "image/gif"]):
+            return Response({"error_code": "InvalidImageType"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        if re.search("^[a-zA-Z0-9_]{1,20}$",
+                     request.data["display_name"]) is None:
+            return Response({"error_code": "InvalidDisplayName"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        ext = img.name.split(".")[-1]
+        filename = "{}.{}".format(
+            uuid.uuid3(
+                uuid.NAMESPACE_X500,
+                uid + provider).hex,
+            ext)
+        icon_path = "./api/static/images/user_icons/"
+        if os.path.isfile(os.path.join(icon_path, filename)):
+            print("delete current icon img file")
+            os.remove(os.path.join(icon_path, filename))
+        FileSystemStorage(
+            location=icon_path).save(filename, img)
+        print(type(request.data["display_name"]))
+        setting_items["display_name"] = request.data["display_name"]
+        setting_items["icon_url"] = os.path.join(
+            "http://127.0.0.1:8000/static/images/user_icons/", filename)
         UserInfo.objects.update_or_create(
-            user=user, defaults=user_settings)
+            user=user, defaults=setting_items)
         return Response({"status": "userinfo set"})
 
 
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all()
+    queryset = Post.objects.order_by("-created").all()
     serializer_class = PostSerializer
     # permission_classes = [permissions.IsAuthenticated]
 
@@ -107,17 +145,19 @@ class PostViewSet(viewsets.ModelViewSet):
         sum_record = len(Post.objects.all())
         start = min(start, sum_record)
         end = min(end, sum_record)
-        posts = Post.objects.all()[start:end]
+        posts = Post.objects.all().order_by("-created")[start:end]
         result = self.get_serializer(posts, many=True).data
         for i in range(len(result)):
             _ = result[i]["post_sender"].pop("user_info_id")
             _ = result[i]["post_sender"].pop("user")
-        return Response(result)
+        res = Response(result, status=status.HTTP_200_OK)
+        return res
 
     @action(methods=["post"], detail=True,
             permission_classes=[IsAuthenticated])
     def set_post(self, request, pk=None):
         post_data = request.data
+        print(post_data)
         user = SocialAccount.objects.get(user=request.user)
         user_info = UserInfoSerializer(
             UserInfo.objects.get(user=user)).data
@@ -127,7 +167,9 @@ class PostViewSet(viewsets.ModelViewSet):
         print(serializer.errors)
         print(serializer.validated_data)
         serializer.save()
-        return Response({"status": "set post data"})
+        res = Response({"result": "success set post"},
+                       status=status.HTTP_200_OK)
+        return res
 
 
 class GetPostViewSet(viewsets.ReadOnlyModelViewSet):
