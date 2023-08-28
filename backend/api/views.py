@@ -6,7 +6,7 @@ import uuid
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from allauth.socialaccount.models import SocialAccount
-from .models import Post, Link, UserInfo
+from .models import Post, Keyword, UserInfo
 from rest_framework import viewsets, permissions
 from .serializers import UserSerializer, PostSerializer, UserInfoSerializer
 from django.utils import timezone
@@ -95,10 +95,7 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(methods=["post"], detail=True,
             permission_classes=[IsAuthenticated])
     def set_user_info(self, request, pk=None):
-        setting_items = {
-            "display_name": "",
-            "icon_url": ""
-        }
+        setting_items = {}
         user = SocialAccount.objects.get(user=request.user)
         uid, provider = user.uid, user.provider
         if "display_name" not in request.data:
@@ -130,8 +127,14 @@ class UserViewSet(viewsets.ModelViewSet):
             os.remove(os.path.join(icon_path, filename))
         FileSystemStorage(
             location=icon_path).save(filename, img)
-        print(type(request.data["display_name"]))
+        print(request)
         setting_items["display_name"] = request.data["display_name"]
+        print(request.data["anonymous_mode"])
+        print("----------------------------------")
+        if request.data["anonymous_mode"] == 'true':
+            setting_items["anonymous_mode"] = True
+        else:
+            setting_items["anonymous_mode"] = False
         setting_items["icon_url"] = os.path.join(
             "http://127.0.0.1:8000/static/images/user_icons/", filename)
         UserInfo.objects.update_or_create(
@@ -168,9 +171,27 @@ class PostViewSet(viewsets.ModelViewSet):
         print(pk)
         q = request.query_params
         start, end = int(q["start"]), int(q["start"]) + int(q["num"])
-        # display_name=q["display_name"]
         post_sender = UserInfo.objects.get(display_name=pk)
         posts = Post.objects.filter(post_sender=post_sender)
+        sum_record = len(posts)
+        print(sum_record)
+        start = min(start, sum_record)
+        end = min(end, sum_record)
+        show_posts = posts.order_by("-created")[start:end]
+        result = self.get_serializer(show_posts, many=True).data
+        for i in range(len(result)):
+            _ = result[i]["post_sender"].pop("user_info_id")
+            _ = result[i]["post_sender"].pop("user")
+        res = Response(result, status=status.HTTP_200_OK)
+        return res
+
+    @action(methods=["get"], detail=False)
+    def get_keyword_post(self, request, pk=None):
+        q = request.query_params
+        start, end = int(q["start"]), int(q["start"]) + int(q["num"])
+        keyword = q["keyword"]
+        # keywords_post = Keyword.objects.filter(keyword=keyword)
+        posts = Post.objects.filter(keywords__keyword__exact=keyword)
         sum_record = len(posts)
         print(sum_record)
         start = min(start, sum_record)

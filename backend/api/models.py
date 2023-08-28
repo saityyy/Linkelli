@@ -5,6 +5,7 @@ from allauth.socialaccount.models import SocialAccount
 class UserInfo(models.Model):
     user_info_id = models.BigAutoField(primary_key=True)
     display_name = models.CharField(max_length=30, unique=True)
+    anonymous_mode = models.BooleanField(blank=False, default=False)
     user = models.OneToOneField(
         SocialAccount,
         on_delete=models.CASCADE)
