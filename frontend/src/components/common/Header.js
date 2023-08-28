@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import get_user_info from "../functional/get_user_info"
 import styles from "./header.module.scss"
+import { UserinfoContext } from "../../App"
 
 export default function Header() {
     const signInUrl =
@@ -12,17 +13,9 @@ export default function Header() {
             <p>Linkelli</p>
         </a>
     )
-    const [username, setUsername] = useState("loading")
-    const [avator, setAvator] = useState("")
-    useEffect(() => {
-        const f = async () => {
-            const user_data = await get_user_info()
-            setUsername(user_data.display_name)
-            setAvator(user_data.icon_url)
-        }
-        f()
-    }, []);
-    if (username === "loading") {
+    const { userinfo, _ } = useContext(UserinfoContext)
+    console.log(userinfo)
+    if (userinfo === undefined) {
         return (
             <div className={styles.header_container}>
                 {common_html}
@@ -32,16 +25,16 @@ export default function Header() {
             </div>
         )
     }
-    else if (username !== "Guest") {
+    else if (userinfo.display_name !== "Guest") {
         return (
             <div className={styles.header_container}>
                 {common_html}
                 <div className={styles.account_content}>
                     <div className={styles.greeting}>
-                        <p>Hello,<br /> {username}!</p>
+                        <p>Hello,<br /> {userinfo.display_name}!</p>
                     </div>
-                    <a href={"/user/" + username.toString()} className={styles.account_icon}>
-                        <img src={avator} width={40} alt="account icon" />
+                    <a href={"/user/" + userinfo.display_name.toString()} className={styles.account_icon}>
+                        <img src={userinfo.icon_url} width={40} alt="account icon" />
                     </a>
                 </div>
                 <div className={styles.post_button}>

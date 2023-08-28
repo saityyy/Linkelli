@@ -8,7 +8,6 @@ import styles from "./user.module.scss"
 
 function User() {
     const { display_name } = useParams();
-    console.log(display_name)
     const add_page = 2
     const [posts, setPosts] = useState([]);
     const [page, setPage] = useState(0);

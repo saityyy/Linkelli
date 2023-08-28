@@ -1,0 +1,42 @@
+@import "../../common_variables.scss";
+
+.anonymous_mode {
+    position: relative;
+}
+
+.switch {
+    position: relative;
+}
+
+input[type="checkbox"] {
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+
+input:checked~.circle {
+    transform: translateX(100%);
+    background-color: blue;
+}
+
+input:checked~.base {
+    background-color: rgb(219, 234, 254);
+    transition: 0.5s;
+}
+
+.circle {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 12px;
+    background-color: gray;
+}
+
+.base {
+    width: 56px;
+    border-radius: 16px;
+    height: 32px;
+    background-color: #ddd;
+}

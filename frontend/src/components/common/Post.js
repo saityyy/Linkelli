@@ -24,17 +24,19 @@ const Post = (({ post, newLimit, isLast }) => {
         <div ref={postRef} className={styles.post_container}>
             <div className={styles.poster_content}>
                 <div className={styles.poster_info}>
-                    <a href="/">
+                    <a href={`/user/${post.post_sender.display_name}`}>
                         <img src={post.post_sender.icon_url} width={30} height={30} alt={"website_image"} />
                     </a>
-                    <a href="/">{post.post_sender.display_name}</a>
+                    <a href={`/user/${post.post_sender.display_name}`}>
+                        {post.post_sender.display_name}
+                    </a>
                     <p>{post_created_time}</p>
                 </div>
                 <div className={styles.post_info}>
                     <p>
                         {post.keywords.map((keyword, index) => (
                             <span key={index.toString()}>
-                                <a href="/">#{keyword.keyword}, </a>
+                                <a href={`/?keyword=${keyword.keyword}`}>#{keyword.keyword}, </a>
                             </span>
                         ))}
                     </p>
