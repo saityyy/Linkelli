@@ -150,11 +150,24 @@ class PostViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Post.objects.all()[0:1]
 
-    @action(methods=["get"], detail=False)
+    @action(methods=["get"], detail=False,
+            url_path="get_post", url_name="get_post")
     def get_post(self, request, pk=None):
-        print(request.query_params)
         q = request.query_params
-        start, end = int(q["start"]), int(q["start"]) + int(q["num"])
+        if (q.get("start") is None) or (q.get("num") is None):
+            return Response({"error_code": "BadQueryRequestError"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        if not q["start"].isdecimal() or not q["num"].isdecimal():
+            return Response({"error_code": "BadQueryRequestError"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        start, num = (int(q["start"]), int(q["num"]))
+        end = start + num
+        if start < 0 or num < 0:
+            return Response({"error_code": "BadQueryRequestError"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        if num >= 30:
+            return Response({"error_code": "TooManyRequestPostError"},
+                            status=status.HTTP_400_BAD_REQUEST)
         sum_record = len(Post.objects.all())
         start = min(start, sum_record)
         end = min(end, sum_record)
@@ -204,8 +217,9 @@ class PostViewSet(viewsets.ModelViewSet):
         res = Response(result, status=status.HTTP_200_OK)
         return res
 
-    @action(methods=["post"], detail=True,
-            permission_classes=[IsAuthenticated])
+    @action(methods=["post"], detail=False,
+            permission_classes=[IsAuthenticated],
+            url_path="set_post", url_name="set_post")
     def set_post(self, request, pk=None):
         post_data = request.data
         print(post_data)
