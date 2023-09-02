@@ -38,7 +38,7 @@ def csrf(request):
     return response
 
 
-def get_user_profile(request):
+def get_user_info(request):
     if request.user.is_authenticated:
         print(request.user)
         social_account = SocialAccount.objects.get(user=request.user)
@@ -61,11 +61,10 @@ class UserViewSet(viewsets.ModelViewSet):
     # permission_classes = [permissions.IsAuthenticated]
     ttp_method_names = ['get', "post"]
 
-    @action(methods=["get"], detail=True)
-    def get_user_profile(self, request, pk=None):
+    @action(methods=["get"], detail=False,
+            url_path="get_user_info", url_name="get_user_info")
+    def get_user_info(self, request, pk=None):
         if request.user.is_authenticated:
-            print(request.META.get("HTTP_REFERER"))
-            print("authenticated")
             user = SocialAccount.objects.get(user=request.user)
             uid, provider = user.uid, user.provider
             try:
@@ -85,15 +84,15 @@ class UserViewSet(viewsets.ModelViewSet):
             result["exist_user_info"] = True
             return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
         else:
-            print("not authenticated")
             guest_account = {
                 "display_name": "Guest",
                 "icon_url": None
             }
             return JsonResponse(guest_account, safe=False)
 
-    @action(methods=["post"], detail=True,
-            permission_classes=[IsAuthenticated])
+    @action(methods=["post"], detail=False,
+            permission_classes=[IsAuthenticated],
+            url_path="set_user_info", url_name="set_user_info")
     def set_user_info(self, request, pk=None):
         setting_items = {}
         user = SocialAccount.objects.get(user=request.user)
@@ -123,14 +122,10 @@ class UserViewSet(viewsets.ModelViewSet):
             ext)
         icon_path = "./api/static/images/user_icons/"
         if os.path.isfile(os.path.join(icon_path, filename)):
-            print("delete current icon img file")
             os.remove(os.path.join(icon_path, filename))
         FileSystemStorage(
             location=icon_path).save(filename, img)
-        print(request)
         setting_items["display_name"] = request.data["display_name"]
-        print(request.data["anonymous_mode"])
-        print("----------------------------------")
         if request.data["anonymous_mode"] == 'true':
             setting_items["anonymous_mode"] = True
         else:
@@ -181,13 +176,11 @@ class PostViewSet(viewsets.ModelViewSet):
 
     @action(methods=["get"], detail=True)
     def get_user_post(self, request, pk=None):
-        print(pk)
         q = request.query_params
         start, end = int(q["start"]), int(q["start"]) + int(q["num"])
         post_sender = UserInfo.objects.get(display_name=pk)
         posts = Post.objects.filter(post_sender=post_sender)
         sum_record = len(posts)
-        print(sum_record)
         start = min(start, sum_record)
         end = min(end, sum_record)
         show_posts = posts.order_by("-created")[start:end]
@@ -222,15 +215,18 @@ class PostViewSet(viewsets.ModelViewSet):
             url_path="set_post", url_name="set_post")
     def set_post(self, request, pk=None):
         post_data = request.data
-        print(post_data)
+        if len(post_data["links"]) > 5:
+            return Response({"error_code": "TooManyLinksError"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        if len(post_data["keywords"]) > 5:
+            return Response({"error_code": "TooManyKeywordsError"},
+                            status=status.HTTP_400_BAD_REQUEST)
         user = SocialAccount.objects.get(user=request.user)
         user_info = UserInfoSerializer(
             UserInfo.objects.get(user=user)).data
         post_data["post_sender"] = user_info
         serializer = PostSerializer(data=post_data)
-        print(serializer.is_valid())
-        print(serializer.errors)
-        print(serializer.validated_data)
+        serializer.is_valid(raise_exception=True)
         serializer.save()
         res = Response({"result": "success set post"},
                        status=status.HTTP_200_OK)

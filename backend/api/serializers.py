@@ -28,13 +28,7 @@ class UserSerializer(serializers.ModelSerializer):
             "extra_data"
         ]
 
-    def get_user(self, request):
-        print("get_user")
-        print(request.user.uid)
-        return "test"
-
     def create(self, validated_data):
-        print(validated_data)
         ret = super().create(validated_data)
         return ret
 
@@ -96,13 +90,11 @@ class PostSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        print("create")
         links_data = validated_data.pop("links")
         keywords_data = validated_data.pop("keywords")
         user_info_id = validated_data["post_sender"]["user_info_id"]
         validated_data["post_sender"] = UserInfo.objects.get(
             user_info_id=user_info_id)
-        print(validated_data["post_sender"])
 
         post_object = Post.objects.create(**validated_data)
         for link_data in links_data:

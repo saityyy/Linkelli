@@ -14,7 +14,6 @@ class SetPostsTest(APITestCase):
     def setUp(self):
         user = User.objects.create_user("test")
         # token = Token.objects.get(user__username="test")
-        print(self.client.credentials())
         self.social_account = SocialAccount.objects.create(
             user=user,
             provider="google",
@@ -53,3 +52,68 @@ class SetPostsTest(APITestCase):
                                secure=True,
                                format='json')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_error_too_many_links(self):
+        data = {"comment": "test",
+                "links": [
+                    {"link": "https://github.com"},
+                    {"link": "https://github.com"},
+                    {"link": "https://github.com"},
+                    {"link": "https://github.com"},
+                    {"link": "https://github.com"},
+                    {"link": "https://github.com"},
+                ],
+                "keywords": []
+                }
+        res = self.client.post(self.url,
+                               data,
+                               secure=True,
+                               format='json')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(res.data["error_code"], "TooManyLinksError")
+
+    def test_error_too_many_keywords(self):
+        data = {"comment": "test",
+                "links": [],
+                "keywords": [
+                    {"keyword": "github"},
+                    {"keyword": "github"},
+                    {"keyword": "github"},
+                    {"keyword": "github"},
+                    {"keyword": "github"},
+                    {"keyword": "github"},
+                ]
+                }
+        res = self.client.post(self.url,
+                               data,
+                               secure=True,
+                               format='json')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(res.data["error_code"], "TooManyKeywordsError")
+
+    def test_error_too_long_comment(self):
+        # comment length <=120
+        data = {"comment": ("123456789_123456789_123456789_123456789\
+                            123456789_123456789_123456789_123456789\
+                            123456789_123456789_123456789_123456789\
+                            abcde"),
+                "links": [],
+                "keywords": []
+                }
+        res = self.client.post(self.url,
+                               data,
+                               secure=True,
+                               format='json')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_error_authentication_failed(self):
+        self.client.logout()
+        data = {"comment": "test",
+                "links": [],
+                "keywords": []
+                }
+        res = self.client.post(self.url,
+                               data,
+                               secure=True,
+                               format='json')
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)

@@ -24,7 +24,7 @@ class Post(models.Model):
         blank=False,
         null=True,
         on_delete=models.CASCADE)
-    comment = models.CharField(max_length=100, default="")
+    comment = models.CharField(max_length=120, default="")
 
     def __str__(self):
         return str(self.post_id)
