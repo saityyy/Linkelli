@@ -1,0 +1,67 @@
+@import "../../common_variables.scss";
+
+.header_container {
+    width: 200px;
+    padding: 10px;
+    border: 1px solid gray;
+
+    .logo_container {
+        display: block;
+        padding: 10px;
+        margin-bottom: 200px;
+        cursor: pointer;
+        text-decoration: none;
+
+        p {
+            font-size: 24px;
+            font-weight: bold;
+            color: $main_char_color;
+        }
+    }
+
+    .post_button {
+        height: 40px;
+        width: 80px;
+        background-color: $main_color;
+        display: flex;
+        margin: 0 auto;
+        border-radius: 4px;
+        border: 1px solid white;
+
+        &:hover {
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+            border: 1px solid $hover_border_color;
+        }
+
+        a {
+            margin: auto;
+            text-decoration: none;
+            text-align: center;
+            color: $main_char_color;
+        }
+    }
+
+    .not_signin {
+        .signin_button {
+            height: 40px;
+            width: 80px;
+            background-color: $main_color;
+            display: flex;
+            margin: 0 auto;
+            border-radius: 4px;
+            border: 1px solid white;
+
+            &:hover {
+                transition: background-color 0.3s ease, border-color 0.3s ease;
+                border: 1px solid $hover_border_color;
+            }
+        }
+
+        a {
+            margin: auto;
+            text-decoration: none;
+            text-align: center;
+            color: $main_char_color;
+        }
+    }
+}

@@ -1,0 +1,30 @@
+@import "../common_variables.scss";
+
+.share_container {
+    p {
+        cursor: default;
+    }
+}
+
+.send_post_button {
+    height: 40px;
+    width: 200px;
+    background-color: $main_color;
+    display: flex;
+    margin: 0 auto;
+    border-radius: 4px;
+    border: 1px solid white;
+    cursor: pointer;
+
+    &:hover {
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+        border: 1px solid $hover_border_color;
+    }
+
+    p {
+        margin: auto;
+        text-decoration: none;
+        text-align: center;
+        color: $main_char_color;
+    }
+}
