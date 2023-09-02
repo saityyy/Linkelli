@@ -1,6 +1,6 @@
 export default async function SignOut() {
     const url = "http://127.0.0.1:8000/accounts/logout/"
-    const csrftoken = await fetch("http://127.0.0.1:8000/api/csrf/", {
+    const csrftoken = await fetch("http://127.0.0.1:8000/api/v1/csrf/", {
         mode: "cors",
         credentials: "include",
     })
