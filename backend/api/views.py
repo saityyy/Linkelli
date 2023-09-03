@@ -114,7 +114,7 @@ class UserViewSet(viewsets.ModelViewSet):
                      request.data["display_name"]) is None:
             return Response({"error_code": "InvalidDisplayName"},
                             status=status.HTTP_400_BAD_REQUEST)
-        ext = img.name.split(".")[-1]
+        ext = img.name.split(".")[-1].lower()
         filename = "{}.{}".format(
             uuid.uuid3(
                 uuid.NAMESPACE_X500,
