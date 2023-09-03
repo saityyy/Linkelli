@@ -125,9 +125,9 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "linkelli",
-        "USER": "root",
-        "PASSWORD": "root",
-        "HOST": "127.0.0.1",
+        "USER": "linkelli",
+        "PASSWORD": "linkelli",
+        "HOST": "db",
         "PORT": "3306",
     }
 }
