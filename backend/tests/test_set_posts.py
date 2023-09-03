@@ -25,7 +25,6 @@ class SetPostsTest(APITestCase):
             "user": self.social_account,
             "anonymous_mode": False
         }
-        user_info = UserInfo.objects.create(**data)
         self.url = reverse("api:post-set_post")
         self.client.force_authenticate(user=user)
 
