@@ -1,7 +1,8 @@
 export default async function set_user_info(body) {
-    const api_server = process.env.REACT_APP_API_SERVER_ORIGIN
-    const url = api_server + "/api/v1/user/set_user_info/"
-    const csrf_url = api_server + "/api/v1/csrf/"
+    const csrf_url = process.env.REACT_APP_API_SERVER_ORIGIN
+        + "/api/v1/csrf/"
+    const url = process.env.REACT_APP_API_SERVER_ORIGIN
+        + "/api/v1/user/set_user_info/"
     const csrftoken = await fetch(csrf_url, {
         mode: "cors",
         credentials: "include",

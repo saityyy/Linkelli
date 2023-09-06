@@ -1,14 +1,68 @@
 version: "3"
 
 services:
-  mysql:
-    image: mysql:latest
-    container_name: mysql
+  db:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/mysql/Dockerfile
+    container_name: mysql_test
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: linkelli
       TZ: "Asia/Tokyo"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root"
+        ]
+      interval: 3s
+      timeout: 1s
+      retries: 3
+      start_period: 1s
     volumes:
       - ./my.cnf:/etc/mysql/conf.d/my.cnf
+
+  app:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/django/Dockerfile
+    container_name: django_test
+    working_dir: /backend
+    command: sh -c "source ./.venv/bin/activate && python ./manage.py migrate && python ./manage.py collectstatic && python -m gunicorn -b 0.0.0.0:8000 mysite.wsgi"
+    tty: true
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+
+  # react:
+  #   build:
+  #     context: .
+  #     dockerfile: ./dockerfiles/react/Dockerfile
+  #   container_name: react
+  #   tty: true
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - app
+
+  web:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/nginx/Dockerfile
+    container_name: nginx
+    tty: true
+    volumes:
+      - ./dockerfiles/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - app

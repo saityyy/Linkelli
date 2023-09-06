@@ -1,7 +1,8 @@
 export default async function get_post(display_name, start, num) {
-    console.log(display_name)
+    const url = process.env.REACT_APP_API_SERVER_ORIGIN
+        + `/api/v1/post/${display_name}/get_user_post/?num=${num}&start=${start}`
     const data = await fetch(
-        `http://127.0.0.1:8000/api/v1/post/${display_name}/get_user_post/?num=${num}&start=${start}`,
+        url,
         { mode: "cors", credentials: "include" })
         .then((res) => res.json())
         .catch(() => {

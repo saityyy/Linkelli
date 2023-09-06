@@ -3,6 +3,7 @@ import uuid
 from allauth.account.forms import LoginForm
 import os
 import uuid
+from django.conf.settings import STATIC_ROOT
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from allauth.socialaccount.models import SocialAccount
@@ -76,7 +77,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 return JsonResponse(
                     {"exist_user_info": False,
                      "display_name": temp_display_name[:10],
-                     "icon_url": "http://127.0.0.1:8000/static/images/user_icons/no_image.png"
+                     "icon_url": "http://127.0.0.1:8000/app_static/images/user_icons/no_image.png"
                      }, status=status.HTTP_200_OK)
             result = UserInfoSerializer(user_info).data
             _ = result.pop("user")
@@ -131,7 +132,7 @@ class UserViewSet(viewsets.ModelViewSet):
         else:
             setting_items["anonymous_mode"] = False
         setting_items["icon_url"] = os.path.join(
-            "http://127.0.0.1:8000/static/images/user_icons/", filename)
+            "http://127.0.0.1:8000/app_static/images/user_icons/", filename)
         UserInfo.objects.update_or_create(
             user=user, defaults=setting_items)
         return Response({"status": "userinfo set"})
