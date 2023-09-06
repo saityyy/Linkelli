@@ -3,7 +3,7 @@ import uuid
 from allauth.account.forms import LoginForm
 import os
 import uuid
-from django.conf.settings import STATIC_ROOT
+from django.conf import settings
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from allauth.socialaccount.models import SocialAccount

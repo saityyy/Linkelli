@@ -1,0 +1,74 @@
+version: "3"
+
+services:
+  db:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/mysql/Dockerfile
+    container_name: mysql_test
+    ports:
+      - "3306:3306"
+    environment:
+      TZ: "Asia/Tokyo"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root"
+        ]
+      interval: 3s
+      timeout: 1s
+      retries: 3
+      start_period: 1s
+    volumes:
+      - ./my.cnf:/etc/mysql/conf.d/my.cnf
+
+  app:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/django/Dockerfile.dev
+    container_name: django_test
+    working_dir: /backend
+    tty: true
+    volumes:
+      - type: bind
+        source: ./backend
+        target: /backend
+      - type: volume
+        source: venv
+        target: /backend/.venv
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+
+  react:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/react/Dockerfile
+    container_name: react
+    tty: true
+    volumes:
+      - type: bind
+        source: ./frontend
+        target: /frontend
+      - type: volume
+        source: node_modules
+        target: /frontend/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - app
+
+volumes:
+  node_modules:
+    name: node_modules_volume
+  venv:
+    name: venv_volume
