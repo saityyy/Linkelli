@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-3o%$$qsrf&g-v_5b94acw_in8jqwx!7r2d3%i&(nk7fk6=9eus
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+ALLOWED_HOSTS = ["127.0.0.1","linkelli.net"]
 
 # Application definition
 
@@ -66,8 +66,9 @@ MIDDLEWARE = [
 ]
 
 SITE_ID = 1
-LOGIN_REDIRECT_URL = 'http://localhost/user/settings?redirect=http://localhost/'
-ACCOUNT_LOGOUT_REDIRECT_URL = 'http://localhost/'
+LOGIN_REDIRECT_URL = 'https://linkelli.net/user/settings?redirect=https://linkelli.net/'
+ACCOUNT_LOGOUT_REDIRECT_URL = 'https://linkelli.net/'
+SESSION_COOKIE_SECURE=True
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = "None"
 ACCESS_CONTROL_ALLOW_ORIGIN = [
@@ -80,13 +81,9 @@ CORS_ALLOW_HEADERS = [
 ]
 CORS_ALLOW_METHODS = ["*"]
 CORS_ALLOW_CREDENTIALS = True
-CORS_ORIGIN_WHITELIST = [
-    "http://localhost",
-    "http://127.0.0.1",
-]
+CORS_ORIGIN_WHITELIST = ["https://linkelli.net"]
 CSRF_TRUSTED_ORIGINS = [
-                         "http://127.0.0.1",
-                         "http://localhost",
+                         "https://linkelli.net",
                          ]
 
 ROOT_URLCONF = 'mysite.urls'

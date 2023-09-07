@@ -11,7 +11,7 @@ services:
     environment:
       TZ: "Asia/Tokyo"
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-u", "root" ]
+      test: [ "CMD", "mysqladmin", "ping", "-h","localhost","-u", "root" ]
       interval: 3s
       timeout: 1s
       retries: 3
@@ -27,7 +27,7 @@ services:
       dockerfile: ./dockerfiles/django/Dockerfile
     container_name: django_test
     working_dir: /backend
-    command: sh -c "source ./.venv/bin/activate && python ./manage.py migrate && python ./manage.py collectstatic && python -m gunicorn -b 0.0.0.0:8000 mysite.wsgi"
+    command: sh -c "source ./.venv/bin/activate && python ./manage.py migrate && python ./manage.py collectstatic && python -m gunicorn -b 0.0.0.0:8000 mysite.wsgi:application"
     tty: true
     ports:
       - "8000:8000"
@@ -40,12 +40,13 @@ services:
 
   https-portal:
     image: steveltn/https-portal:latest
+    container_name: https_portal
     ports:
       - '80:80'
       - '443:443'
     restart: always
     environment:
-      DOMAINS: 'linekelli.net -> http://web:80'
+      DOMAINS: 'linkelli.net -> http://web:81'
       STAGE: 'production'
     volumes:
       - https-portal-data:/var/lib/https-portal
@@ -55,13 +56,15 @@ services:
   web:
     build:
       context: .
-      dockerfile: ./dockerfiles/nginx/Dockerfile
+      dockerfile: ./dockerfiles/nginx/Dockerfile.prod
     container_name: nginx
     tty: true
-    volumes:
-      - ./dockerfiles/nginx/default.conf:/etc/nginx/conf.d/default.conf
     ports:
-      - "80:80"
+      - "81:81"
+    volumes:
+      - type: bind
+        source: ./dockerfiles/nginx/default.prod.conf
+        target: /etc/nginx/conf.d/default.conf
     depends_on:
       - app
     networks:
@@ -69,6 +72,7 @@ services:
 
 volumes:
   https-portal-data:
+    name: https-portal-data
 
 
 networks:
