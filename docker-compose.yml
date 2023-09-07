@@ -11,22 +11,15 @@ services:
     environment:
       TZ: "Asia/Tokyo"
     healthcheck:
-      test:
-        [
-          "CMD",
-          "mysqladmin",
-          "ping",
-          "-h",
-          "localhost",
-          "-u",
-          "root"
-        ]
+      test: [ "CMD", "mysqladmin", "ping", "-u", "root" ]
       interval: 3s
       timeout: 1s
       retries: 3
       start_period: 1s
     volumes:
       - ./my.cnf:/etc/mysql/conf.d/my.cnf
+    networks:
+      - network
 
   app:
     build:
@@ -42,17 +35,22 @@ services:
       db:
         condition: service_healthy
         restart: true
+    networks:
+      - network
 
-  # react:
-  #   build:
-  #     context: .
-  #     dockerfile: ./dockerfiles/react/Dockerfile
-  #   container_name: react
-  #   tty: true
-  #   ports:
-  #     - "3000:3000"
-  #   depends_on:
-  #     - app
+  https-portal:
+    image: steveltn/https-portal:latest
+    ports:
+      - '80:80'
+      - '443:443'
+    restart: always
+    environment:
+      DOMAINS: 'linekelli.net -> http://web:80'
+      STAGE: 'production'
+    volumes:
+      - https-portal-data:/var/lib/https-portal
+    networks:
+      - network
 
   web:
     build:
@@ -66,3 +64,12 @@ services:
       - "80:80"
     depends_on:
       - app
+    networks:
+      - network
+
+volumes:
+  https-portal-data:
+
+
+networks:
+  network:
