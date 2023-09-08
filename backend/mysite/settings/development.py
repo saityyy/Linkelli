@@ -24,7 +24,8 @@ SECRET_KEY = 'django-insecure-3o%$$qsrf&g-v_5b94acw_in8jqwx!7r2d3%i&(nk7fk6=9eus
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+ORIGIN_NAME="http://localhost"
+ALLOWED_HOSTS = ["127.0.0.1", "localhost","django"]
 
 # Application definition
 
@@ -64,15 +65,15 @@ MIDDLEWARE = [
 ]
 
 SITE_ID = 1
-LOGIN_REDIRECT_URL = 'http://127.0.0.1:3000/user/settings?redirect=http://127.0.0.1:3000/'
-ACCOUNT_LOGOUT_REDIRECT_URL = 'http://127.0.0.1:3000/'
+LOGIN_REDIRECT_URL = os.path.join(
+    ORIGIN_NAME,
+    '/user/settings?redirect=',
+    ORIGIN_NAME
+)
+ACCOUNT_LOGOUT_REDIRECT_URL = ORIGIN_NAME
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = "None"
-ACCESS_CONTROL_ALLOW_ORIGIN = [
-    "http://127.0.0.1:3000/",
-    "http://127.0.0.1",
-    "http://localhost:3000/",
-    "http://localhost"]
+ACCESS_CONTROL_ALLOW_ORIGIN = ["*"]
 ACCESS_CONTROL_ALLOW_METHOD = ["*"]
 CORS_ALLOW_HEADERS = [
     "Content-type",
@@ -80,17 +81,10 @@ CORS_ALLOW_HEADERS = [
 ]
 CORS_ALLOW_METHODS = ["*"]
 CORS_ALLOW_CREDENTIALS = True
-CORS_ORIGIN_WHITELIST = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost",
-    "http://127.0.0.1",
+CORS_ORIGIN_WHITELIST = []
+CSRF_TRUSTED_ORIGINS = [
+    ORIGIN_NAME
 ]
-CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3000",
-                         "http://localhost:3000",
-                         "http://127.0.0.1",
-                         "http://localhost",
-                         ]
 
 ROOT_URLCONF = 'mysite.urls'
 
