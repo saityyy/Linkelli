@@ -25,6 +25,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.decorators import parser_classes
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.core.files.storage import FileSystemStorage
+from django.db import DatabaseError
 
 
 def csrf(request):
@@ -145,8 +146,15 @@ class UserViewSet(viewsets.ModelViewSet):
             "/app_static/images/user_icons/",
             user_hash_id,
               filename)
-        UserInfo.objects.update_or_create(
-            user=user, defaults=setting_items)
+        try:
+            UserInfo.objects.update_or_create(
+                user=user, defaults=setting_items)
+        except DatabaseError as e:
+            err_code,_=e.args
+            if err_code==1062:
+                return Response({"error_code": "DuplicateDisplayName"},
+                                status=status.HTTP_400_BAD_REQUEST)
+
         return Response({"status": "userinfo set"})
 
 
