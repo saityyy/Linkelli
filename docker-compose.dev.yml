@@ -37,6 +37,8 @@ services:
     container_name: django_test
     working_dir: /backend
     tty: true
+    environment:
+      - DJANGO_DEVELOPMENT=true
     volumes:
       - type: bind
         source: ./backend

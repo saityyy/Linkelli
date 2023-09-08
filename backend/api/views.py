@@ -1,5 +1,6 @@
 import re
 import uuid
+import glob
 from allauth.account.forms import LoginForm
 import os
 import uuid
@@ -79,7 +80,7 @@ class UserViewSet(viewsets.ModelViewSet):
                      "display_name": temp_display_name[:10],
                      "icon_url": os.path.join(
                          settings.ORIGIN_NAME,
-                        "/app_static/images/user_icons/no_image.png"
+                        "/app_static/images/user_icons/anonymous/icon.png"
                      )
                      }, status=status.HTTP_200_OK)
             result = UserInfoSerializer(user_info).data
@@ -118,24 +119,32 @@ class UserViewSet(viewsets.ModelViewSet):
                      request.data["display_name"]) is None:
             return Response({"error_code": "InvalidDisplayName"},
                             status=status.HTTP_400_BAD_REQUEST)
+
+        icon_path=os.path.join(settings.STATIC_ROOT, "./images/user_icons/")
+        if os.environ["DJANGO_DEVELOPMENT"]:
+            icon_path = "./api/static/images/user_icons/"
         ext = img.name.split(".")[-1].lower()
-        filename = "{}.{}".format(
-            uuid.uuid3(
-                uuid.NAMESPACE_X500,
-                uid + provider).hex,
-            ext)
-        icon_path = "./api/static/images/user_icons/"
-        if os.path.isfile(os.path.join(icon_path, filename)):
-            os.remove(os.path.join(icon_path, filename))
-        FileSystemStorage(
-            location=icon_path).save(filename, img)
+        user_hash_id=uuid.uuid3(uuid.NAMESPACE_X500,uid + provider).hex
+        user_icon_dir=os.path.join(icon_path,user_hash_id)
+        filename = "{}.{}".format("icon",ext)
+        if not os.path.exists(user_icon_dir):
+            os.mkdir(user_icon_dir)
+            FileSystemStorage(
+                location=user_icon_dir).save(filename, img)
+        else:
+            os.remove(os.path.join(user_icon_dir,os.listdir(user_icon_dir)[0]))
+            FileSystemStorage(
+                location=user_icon_dir).save(filename, img)
         setting_items["display_name"] = request.data["display_name"]
         if request.data["anonymous_mode"] == 'true':
             setting_items["anonymous_mode"] = True
         else:
             setting_items["anonymous_mode"] = False
         setting_items["icon_url"] = os.path.join(
-            settings.ORIGIN_NAME,"/app_static/images/user_icons/", filename)
+            settings.ORIGIN_NAME,
+            "/app_static/images/user_icons/",
+            user_hash_id,
+              filename)
         UserInfo.objects.update_or_create(
             user=user, defaults=setting_items)
         return Response({"status": "userinfo set"})

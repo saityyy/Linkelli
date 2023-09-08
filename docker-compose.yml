@@ -11,7 +11,16 @@ services:
     environment:
       TZ: "Asia/Tokyo"
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h","localhost","-u", "root" ]
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root"
+        ]
       interval: 3s
       timeout: 1s
       retries: 3
@@ -29,6 +38,8 @@ services:
     working_dir: /backend
     command: sh -c "source ./.venv/bin/activate && python ./manage.py migrate && python ./manage.py collectstatic && python -m gunicorn -b 0.0.0.0:8000 mysite.wsgi:application"
     tty: true
+    environment:
+      - DJANGO_DEVELOPMENT=false
     ports:
       - "8000:8000"
     depends_on:
@@ -83,7 +94,6 @@ volumes:
     name: https-portal-data
   django_static_data:
     name: django_static_data
-
 
 networks:
   network:
