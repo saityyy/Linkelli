@@ -35,6 +35,11 @@ services:
       db:
         condition: service_healthy
         restart: true
+    volumes:
+      - type: volume
+        source: django_static_data
+        target: /backend/mysite/app_static
+
     networks:
       - network
 
@@ -65,6 +70,9 @@ services:
       - type: bind
         source: ./dockerfiles/nginx/default.prod.conf
         target: /etc/nginx/conf.d/default.conf
+      - type: volume
+        source: django_static_data
+        target: /app_static
     depends_on:
       - app
     networks:
@@ -73,6 +81,8 @@ services:
 volumes:
   https-portal-data:
     name: https-portal-data
+  django_static_data:
+    name: django_static_data
 
 
 networks:
