@@ -26,8 +26,8 @@ SOCIALACCOUNT_PROVIDERS = {
     },
     'github': {
         'APP': {
-            'client_id': env("github_client_id"),
-            'secret': env("github_secret"),
+            'client_id': env("github_dev_client_id"),
+            'secret': env("github_dev_secret"),
             'key': ''
         }
     },

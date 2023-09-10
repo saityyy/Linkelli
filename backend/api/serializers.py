@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from django.http import HttpResponse
 from allauth.socialaccount.models import SocialAccount
+from django.contrib.auth.models import User
 from .models import Post, Link, Keyword, UserInfo
 from rest_framework import serializers
 from django.contrib import auth
@@ -18,14 +19,9 @@ class UserSerializer(serializers.ModelSerializer):
     # user_info = UserInfoSerializer()
 
     class Meta:
-        model = SocialAccount
+        model = User
         fields = [
-            "user",
-            "uid",
-            "provider",
-            "last_login",
-            "date_joined",
-            "extra_data"
+            "username"
         ]
 
     def create(self, validated_data):

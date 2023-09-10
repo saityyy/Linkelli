@@ -40,7 +40,6 @@ def csrf(request):
     # response.body = {"x-csrftoken": token}
     return response
 
-
 def get_user_info(request):
     if request.user.is_authenticated:
         print(request.user)
@@ -68,28 +67,15 @@ class UserViewSet(viewsets.ModelViewSet):
             url_path="get_user_info", url_name="get_user_info")
     def get_user_info(self, request, pk=None):
         if request.user.is_authenticated:
-            user_id=None
-            try:
-                user = SocialAccount.objects.get(user=request.user)
-                user_id = "{}_{}_{}".format(
-                "SocialAccount"
-                ,user.uid
-                ,user.provider
-                )
-            except ObjectDoesNotExist:
-                user = User.objects.get(username=request.user.username)
-                user_id = "{}_{}".format(
-                "User"
-                ,user.username
-                )
+            user_id=uuid.uuid3(uuid.NAMESPACE_X500,
+                               request.user.username).hex
+            user = User.objects.get(username=request.user.username)
             try:
                 user_info = UserInfo.objects.get(user=user)
             except ObjectDoesNotExist:
-                temp_display_name = uuid.uuid3(
-                    uuid.NAMESPACE_X500,user_id).hex
                 return JsonResponse(
                     {"exist_user_info": False,
-                     "display_name": temp_display_name[:10],
+                     "display_name": user_id[:10],
                      "icon_url": os.path.join(
                          settings.ORIGIN_NAME,
                         "/app_static/images/user_icons/anonymous/icon.png"
@@ -112,8 +98,9 @@ class UserViewSet(viewsets.ModelViewSet):
             url_path="set_user_info", url_name="set_user_info")
     def set_user_info(self, request, pk=None):
         setting_items = {}
-        user = SocialAccount.objects.get(user=request.user)
-        uid, provider = user.uid, user.provider
+        user_hash_id=uuid.uuid3(uuid.NAMESPACE_X500,
+                            request.user.username).hex
+        user = User.objects.get(username=request.user.username)
         if "display_name" not in request.data:
             return Response({"error_code": "FieldNotExist"},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -136,7 +123,6 @@ class UserViewSet(viewsets.ModelViewSet):
         if os.environ["DJANGO_DEVELOPMENT"]:
             icon_path = "./api/static/images/user_icons/"
         ext = img.name.split(".")[-1].lower()
-        user_hash_id=uuid.uuid3(uuid.NAMESPACE_X500,uid + provider).hex
         user_icon_dir=os.path.join(icon_path,user_hash_id)
         filename = "{}.{}".format("icon",ext)
         if not os.path.exists(user_icon_dir):
@@ -253,7 +239,7 @@ class PostViewSet(viewsets.ModelViewSet):
         if len(post_data["keywords"]) > 5:
             return Response({"error_code": "TooManyKeywordsError"},
                             status=status.HTTP_400_BAD_REQUEST)
-        user = SocialAccount.objects.get(user=request.user)
+        user = User.objects.get(username=request.user.username)
         user_info = UserInfoSerializer(
             UserInfo.objects.get(user=user)).data
         post_data["post_sender"] = user_info
