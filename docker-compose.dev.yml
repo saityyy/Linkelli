@@ -36,9 +36,13 @@ services:
       dockerfile: ./dockerfiles/django/Dockerfile.dev
     container_name: django_test
     working_dir: /backend
+    command: sh -c "source ./.venv/bin/activate && python ./manage.py migrate && python ./manage.py createsuperuser --noinput && python python ./manage.py runserver 0.0.0.0:8001"
     tty: true
     environment:
       - DJANGO_DEVELOPMENT=true
+      - DJANGO_SUPERUSER_USERNAME=admin
+      - DJANGO_SUPERUSER_EMAIL=admin@mail.com
+      - DJANGO_SUPERUSER_PASSWORD=aaa
     volumes:
       - type: bind
         source: ./backend
@@ -54,22 +58,6 @@ services:
         restart: true
     networks:
       - network
-
-  # https-portal:
-  #   image: steveltn/https-portal:latest
-  #   container_name: https_portal
-  #   ports:
-  #     - '3443:443'
-  #   restart: always
-  #   environment:
-  #     DOMAINS: '127.0.0.1 -> http://web:81'
-  #     STAGE: local
-  #   volumes:
-  #     - https-portal-data:/var/lib/https-portal
-  #   networks:
-  #     - network
-  #   depends_on:
-  #     - web
 
   web:
     build:
@@ -112,8 +100,5 @@ volumes:
     name: node_modules_volume
   venv:
     name: venv_volume
-  # https-portal-data:
-  #   name: https-portal-data
-
 networks:
   network:

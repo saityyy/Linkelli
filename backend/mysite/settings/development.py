@@ -1,6 +1,9 @@
 import os
 from pathlib import Path
+import environ
 
+env=environ.Env()
+env.read_env(".env")
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 DEBUG = True
@@ -13,6 +16,22 @@ LOGIN_REDIRECT_URL = os.path.join(
     '/user/settings?redirect=',
     ORIGIN_NAME
 )
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': env("google_client_id"),
+            'secret': env("google_secret"),
+            'key': ''
+        }
+    },
+    'github': {
+        'APP': {
+            'client_id': env("github_client_id"),
+            'secret': env("github_secret"),
+            'key': ''
+        }
+    },
+}
 ACCOUNT_LOGOUT_REDIRECT_URL = ORIGIN_NAME
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = "None"

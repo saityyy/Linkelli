@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.github',
     'django_extensions'
 ]
 AUTHENTICATION_BACKENDS = [
@@ -75,15 +76,6 @@ TEMPLATES = [
         },
     },
 ]
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'APP': {
-            'client_id': '986388952862-pd9tvknj96mgsilndv962s7g7d1mkpkr.apps.googleusercontent.com',
-            'secret': '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',
-            'key': ''
-        }
-    }
-}
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
 

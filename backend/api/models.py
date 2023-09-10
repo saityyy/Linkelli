@@ -13,6 +13,9 @@ class UserInfo(models.Model):
 
     def __str__(self):
         return str(self.display_name)
+    
+    def save(self,*args ,**kwargs):
+        print(self.user_type)
 
 
 class Post(models.Model):

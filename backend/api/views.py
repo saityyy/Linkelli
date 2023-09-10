@@ -26,7 +26,7 @@ from rest_framework.decorators import parser_classes
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.core.files.storage import FileSystemStorage
 from django.db import DatabaseError
-
+from django.contrib.auth.models import User
 
 def csrf(request):
     token = get_token(request)
@@ -68,14 +68,25 @@ class UserViewSet(viewsets.ModelViewSet):
             url_path="get_user_info", url_name="get_user_info")
     def get_user_info(self, request, pk=None):
         if request.user.is_authenticated:
-            user = SocialAccount.objects.get(user=request.user)
-            uid, provider = user.uid, user.provider
+            user_id=None
+            try:
+                user = SocialAccount.objects.get(user=request.user)
+                user_id = "{}_{}_{}".format(
+                "SocialAccount"
+                ,user.uid
+                ,user.provider
+                )
+            except ObjectDoesNotExist:
+                user = User.objects.get(username=request.user.username)
+                user_id = "{}_{}".format(
+                "User"
+                ,user.username
+                )
             try:
                 user_info = UserInfo.objects.get(user=user)
             except ObjectDoesNotExist:
                 temp_display_name = uuid.uuid3(
-                    uuid.NAMESPACE_X500,
-                    uid + provider).hex
+                    uuid.NAMESPACE_X500,user_id).hex
                 return JsonResponse(
                     {"exist_user_info": False,
                      "display_name": temp_display_name[:10],
