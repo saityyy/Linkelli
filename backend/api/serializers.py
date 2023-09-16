@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from django.http import HttpResponse
 from allauth.socialaccount.models import SocialAccount
+from django.contrib.auth.models import User
 from .models import Post, Link, Keyword, UserInfo
 from rest_framework import serializers
 from django.contrib import auth
@@ -18,14 +19,9 @@ class UserSerializer(serializers.ModelSerializer):
     # user_info = UserInfoSerializer()
 
     class Meta:
-        model = SocialAccount
+        model = User
         fields = [
-            "user",
-            "uid",
-            "provider",
-            "last_login",
-            "date_joined",
-            "extra_data"
+            "username"
         ]
 
     def create(self, validated_data):
@@ -34,8 +30,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserInfoSerializer(serializers.ModelSerializer):
-    user_info_id = serializers.IntegerField()
-    user = UserSerializer(many=False, read_only=True)
+    #user_info_id = serializers.IntegerField()
+    #user = UserSerializer(many=False, read_only=True)
     display_name = serializers.CharField(
         min_length=1,
         max_length=20,
@@ -43,10 +39,16 @@ class UserInfoSerializer(serializers.ModelSerializer):
         allow_blank=False
     )
     icon_url = serializers.CharField(required=True, allow_blank=False)
+    anonymous_mode=serializers.BooleanField(required=True)
 
     class Meta:
         model = UserInfo
-        fields = "__all__"
+        fields =(
+            "display_name",
+            "icon_url",
+            "anonymous_mode"
+        )
+    
 
 
 class LinkSerializer(serializers.ModelSerializer):
@@ -89,12 +91,17 @@ class PostSerializer(serializers.ModelSerializer):
             "comment"
         ]
 
+    def get_post_sender(self,value):
+        print("get_pose_sender")
+        print(value)
+        return value
+
     def create(self, validated_data):
         links_data = validated_data.pop("links")
         keywords_data = validated_data.pop("keywords")
-        user_info_id = validated_data["post_sender"]["user_info_id"]
+        display_name = validated_data["post_sender"]["display_name"]
         validated_data["post_sender"] = UserInfo.objects.get(
-            user_info_id=user_info_id)
+            display_name=display_name)
 
         post_object = Post.objects.create(**validated_data)
         for link_data in links_data:

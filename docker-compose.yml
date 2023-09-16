@@ -1,14 +1,99 @@
 version: "3"
 
 services:
-  mysql:
-    image: mysql:latest
-    container_name: mysql
+  db:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/mysql/Dockerfile
+    container_name: mysql_test
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: linkelli
       TZ: "Asia/Tokyo"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root"
+        ]
+      interval: 3s
+      timeout: 1s
+      retries: 3
+      start_period: 1s
     volumes:
       - ./my.cnf:/etc/mysql/conf.d/my.cnf
+    networks:
+      - network
+
+  app:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/django/Dockerfile
+    container_name: django_test
+    working_dir: /backend
+    command: sh -c "source ./.venv/bin/activate && python ./manage.py migrate && python ./manage.py collectstatic && python -m gunicorn -b 0.0.0.0:8000 mysite.wsgi:application"
+    tty: true
+    environment:
+      - DJANGO_DEVELOPMENT=false
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+    volumes:
+      - type: volume
+        source: django_static_data
+        target: /backend/mysite/app_static
+
+    networks:
+      - network
+
+  https-portal:
+    image: steveltn/https-portal:latest
+    container_name: https_portal
+    ports:
+      - '80:80'
+      - '443:443'
+    restart: always
+    environment:
+      DOMAINS: 'linkelli.net -> http://web:81'
+      STAGE: 'production'
+    volumes:
+      - https-portal-data:/var/lib/https-portal
+    networks:
+      - network
+
+  web:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/nginx/Dockerfile.prod
+    container_name: nginx
+    tty: true
+    ports:
+      - "81:81"
+    volumes:
+      - type: bind
+        source: ./dockerfiles/nginx/default.prod.conf
+        target: /etc/nginx/conf.d/default.conf
+      - type: volume
+        source: django_static_data
+        target: /app_static
+    depends_on:
+      - app
+    networks:
+      - network
+
+volumes:
+  https-portal-data:
+    name: https-portal-data
+  django_static_data:
+    name: django_static_data
+
+networks:
+  network:

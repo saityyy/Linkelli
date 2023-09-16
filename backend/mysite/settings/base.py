@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,13 +20,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-3o%$$qsrf&g-v_5b94acw_in8jqwx!7r2d3%i&(nk7fk6=9eus'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
-
-# Application definition
 
 INSTALLED_APPS = [
     'polls.apps.PollsConfig',
@@ -44,6 +37,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.github',
     'django_extensions'
 ]
 AUTHENTICATION_BACKENDS = [
@@ -64,25 +58,6 @@ MIDDLEWARE = [
 ]
 
 SITE_ID = 1
-LOGIN_REDIRECT_URL = 'http://127.0.0.1:3000/user/settings?redirect=http://127.0.0.1:3000/'
-ACCOUNT_LOGOUT_REDIRECT_URL = 'http://127.0.0.1:3000/'
-CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = "None"
-ACCESS_CONTROL_ALLOW_ORIGIN = [
-    "http://127.0.0.1:3000/",
-    "http://localhost:3000/"]
-ACCESS_CONTROL_ALLOW_METHOD = ["*"]
-CORS_ALLOW_HEADERS = [
-    "Content-type",
-    "x-csrftoken"
-]
-CORS_ALLOW_METHODS = ["*"]
-CORS_ALLOW_CREDENTIALS = True
-CORS_ORIGIN_WHITELIST = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000"
-]
-CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000"]
 
 ROOT_URLCONF = 'mysite.urls'
 
@@ -101,15 +76,6 @@ TEMPLATES = [
         },
     },
 ]
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'APP': {
-            'client_id': '986388952862-pd9tvknj96mgsilndv962s7g7d1mkpkr.apps.googleusercontent.com',
-            'secret': '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',
-            'key': ''
-        }
-    }
-}
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
 
@@ -167,7 +133,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = 'app_static/'
+STATIC_ROOT=os.path.join(BASE_DIR,"app_static")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

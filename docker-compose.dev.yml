@@ -1,0 +1,104 @@
+version: "3"
+
+services:
+  db:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/mysql/Dockerfile
+    container_name: mysql_test
+    ports:
+      - "3306:3306"
+    environment:
+      TZ: "Asia/Tokyo"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root"
+        ]
+      interval: 3s
+      timeout: 1s
+      retries: 3
+      start_period: 1s
+    volumes:
+      - ./my.cnf:/etc/mysql/conf.d/my.cnf
+    networks:
+      - network
+
+  app:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/django/Dockerfile.dev
+    container_name: django_test
+    working_dir: /backend
+    #command: sh -c "source ./.venv/bin/activate && python ./manage.py migrate && python ./manage.py createsuperuser --noinput && python ./manage.py runserver 0.0.0.0:8000"
+    tty: true
+    environment:
+      - DJANGO_DEVELOPMENT=true
+      - DJANGO_SUPERUSER_USERNAME=admin
+      - DJANGO_SUPERUSER_EMAIL=admin@mail.com
+      - DJANGO_SUPERUSER_PASSWORD=aaa
+    volumes:
+      - type: bind
+        source: ./backend
+        target: /backend
+      - type: volume
+        source: venv
+        target: /backend/.venv
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+    networks:
+      - network
+
+  web:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/nginx/Dockerfile.dev
+    container_name: nginx
+    tty: true
+    ports:
+      - "80:80"
+    volumes:
+      - type: bind
+        source: ./dockerfiles/nginx/default.dev.conf
+        target: /etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - network
+  react:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/react/Dockerfile
+    container_name: react
+    tty: true
+    volumes:
+      - type: bind
+        source: ./frontend
+        target: /frontend
+      - type: volume
+        source: node_modules
+        target: /frontend/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - app
+    networks:
+      - network
+
+volumes:
+  node_modules:
+    name: node_modules_volume
+  venv:
+    name: venv_volume
+networks:
+  network:

@@ -1,0 +1,12 @@
+FROM python:3.11.5-alpine3.18
+RUN apk update
+RUN apk add --no-cache git mariadb-dev python3-dev gcc libc-dev
+ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" /dev/null
+WORKDIR /backend
+COPY ./backend .
+RUN pip install --upgrade pip 
+RUN python -m venv ./.venv
+RUN source ./.venv/bin/activate && \
+    pip install -r ./requirements.txt
+EXPOSE 8000
+CMD ["/bin/sh"]

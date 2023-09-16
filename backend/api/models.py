@@ -1,5 +1,6 @@
 from django.db import models
 from allauth.socialaccount.models import SocialAccount
+from django.contrib.auth.models import User
 
 
 class UserInfo(models.Model):
@@ -7,13 +8,13 @@ class UserInfo(models.Model):
     display_name = models.CharField(max_length=30, unique=True)
     anonymous_mode = models.BooleanField(blank=False, default=False)
     user = models.OneToOneField(
-        SocialAccount,
+        User,
         on_delete=models.CASCADE)
     icon_url = models.CharField(max_length=100)
 
     def __str__(self):
         return str(self.display_name)
-
+    
 
 class Post(models.Model):
     post_id = models.BigAutoField(primary_key=True)

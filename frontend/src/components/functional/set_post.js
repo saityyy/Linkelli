@@ -1,6 +1,9 @@
 export default async function set_post(body) {
-    const url = "http://127.0.0.1:8000/api/v1/post/set_post/"
-    const csrftoken = await fetch("http://127.0.0.1:8000/api/v1/csrf/", {
+    const csrf_url = process.env.REACT_APP_API_SERVER_ORIGIN
+        + "/api/v1/csrf/"
+    const url = process.env.REACT_APP_API_SERVER_ORIGIN
+        + "/api/v1/post/set_post/"
+    const csrftoken = await fetch(csrf_url, {
         mode: "cors",
         credentials: "include",
     })
