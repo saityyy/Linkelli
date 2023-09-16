@@ -82,8 +82,6 @@ class UserViewSet(viewsets.ModelViewSet):
                      )
                      }, status=status.HTTP_200_OK)
             result = UserInfoSerializer(user_info).data
-            _ = result.pop("user")
-            _ = result.pop("user_info_id")
             result["exist_user_info"] = True
             return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
         else:
@@ -154,6 +152,22 @@ class UserViewSet(viewsets.ModelViewSet):
 
         return Response({"status": "userinfo set"})
 
+def is_error_get_post(q):
+    if (q.get("start") is None) or (q.get("num") is None):
+        return Response({"error_code": "BadQueryRequestError"},
+                        status=status.HTTP_400_BAD_REQUEST)
+    if not q["start"].isdecimal() or not q["num"].isdecimal():
+        return Response({"error_code": "BadQueryRequestError"},
+                        status=status.HTTP_400_BAD_REQUEST)
+    start, num = (int(q["start"]), int(q["num"]))
+    end = start + num
+    if start < 0 or num < 0:
+        return Response({"error_code": "BadQueryRequestError"},
+                        status=status.HTTP_400_BAD_REQUEST)
+    if num >= 30:
+        return Response({"error_code": "TooManyRequestPostError"},
+                        status=status.HTTP_400_BAD_REQUEST)
+    return (start,end)
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
@@ -163,68 +177,79 @@ class PostViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Post.objects.all()[0:1]
 
-    @action(methods=["get"], detail=False,
+    @action(methods=["get"],
+            permission_classes=[IsAuthenticated],
+             detail=False,
             url_path="get_post", url_name="get_post")
     def get_post(self, request, pk=None):
-        q = request.query_params
-        if (q.get("start") is None) or (q.get("num") is None):
-            return Response({"error_code": "BadQueryRequestError"},
-                            status=status.HTTP_400_BAD_REQUEST)
-        if not q["start"].isdecimal() or not q["num"].isdecimal():
-            return Response({"error_code": "BadQueryRequestError"},
-                            status=status.HTTP_400_BAD_REQUEST)
-        start, num = (int(q["start"]), int(q["num"]))
-        end = start + num
-        if start < 0 or num < 0:
-            return Response({"error_code": "BadQueryRequestError"},
-                            status=status.HTTP_400_BAD_REQUEST)
-        if num >= 30:
-            return Response({"error_code": "TooManyRequestPostError"},
-                            status=status.HTTP_400_BAD_REQUEST)
-        sum_record = len(Post.objects.all())
+        error_check_result=is_error_get_post(request.query_params)
+        if not isinstance(error_check_result,tuple):
+            return error_check_result
+        start,end=error_check_result
+        sum_record = Post.objects.all().count()
         start = min(start, sum_record)
         end = min(end, sum_record)
         posts = Post.objects.all().order_by("-created")[start:end]
-        result = self.get_serializer(posts, many=True).data
-        for i in range(len(result)):
-            _ = result[i]["post_sender"].pop("user_info_id")
-            _ = result[i]["post_sender"].pop("user")
+        result = PostSerializer(posts, many=True).data
+        my_display_name=UserInfo.objects.get(user=request.user).display_name
+        for i,res in enumerate(result):
+            sender=res["post_sender"]
+            if sender["anonymous_mode"] and sender["display_name"]!=my_display_name:
+                result[i]["post_sender"]["display_name"]="anonymous_user"
+                result[i]["post_sender"]["icon_url"]=os.path.join(
+                         settings.ORIGIN_NAME,
+                        "/app_static/images/user_icons/anonymous/icon.png"
+                     )
         res = Response(result, status=status.HTTP_200_OK)
         return res
 
-    @action(methods=["get"], detail=True)
+    @action(methods=["get"],
+            permission_classes=[IsAuthenticated],
+             detail=True)
     def get_user_post(self, request, pk=None):
-        q = request.query_params
-        start, end = int(q["start"]), int(q["start"]) + int(q["num"])
+        error_check_result=is_error_get_post(request.query_params)
+        if not isinstance(error_check_result,tuple):
+            return error_check_result
+        start,end=error_check_result
         post_sender = UserInfo.objects.get(display_name=pk)
+        my_display_name=UserInfo.objects.get(user=request.user).display_name
+        if post_sender.anonymous_mode and pk!=my_display_name:
+            return Response({"error_code": "UserNotExist"},
+                            status=status.HTTP_400_BAD_REQUEST)
         posts = Post.objects.filter(post_sender=post_sender)
         sum_record = len(posts)
         start = min(start, sum_record)
         end = min(end, sum_record)
         show_posts = posts.order_by("-created")[start:end]
-        result = self.get_serializer(show_posts, many=True).data
-        for i in range(len(result)):
-            _ = result[i]["post_sender"].pop("user_info_id")
-            _ = result[i]["post_sender"].pop("user")
+        result = PostSerializer(show_posts, many=True).data
         res = Response(result, status=status.HTTP_200_OK)
         return res
 
-    @action(methods=["get"], detail=False)
+    @action(methods=["get"], 
+            permission_classes=[IsAuthenticated],
+            detail=False)
     def get_keyword_post(self, request, pk=None):
-        q = request.query_params
-        start, end = int(q["start"]), int(q["start"]) + int(q["num"])
-        keyword = q["keyword"]
-        # keywords_post = Keyword.objects.filter(keyword=keyword)
+        error_check_result=is_error_get_post(request.query_params)
+        if not isinstance(error_check_result,tuple):
+            return error_check_result
+        start,end=error_check_result
+        keyword = request.query_params["keyword"]
         posts = Post.objects.filter(keywords__keyword__exact=keyword)
         sum_record = len(posts)
         print(sum_record)
         start = min(start, sum_record)
         end = min(end, sum_record)
         show_posts = posts.order_by("-created")[start:end]
-        result = self.get_serializer(show_posts, many=True).data
-        for i in range(len(result)):
-            _ = result[i]["post_sender"].pop("user_info_id")
-            _ = result[i]["post_sender"].pop("user")
+        result = PostSerializer(show_posts, many=True).data
+        my_display_name=UserInfo.objects.get(user=request.user).display_name
+        for i,res in enumerate(result):
+            sender=res["post_sender"]
+            if sender["anonymous_mode"] and sender["display_name"]!=my_display_name:
+                result[i]["post_sender"]["display_name"]="anonymous_user"
+                result[i]["post_sender"]["icon_url"]=os.path.join(
+                         settings.ORIGIN_NAME,
+                        "/app_static/images/user_icons/anonymous/icon.png"
+                     )
         res = Response(result, status=status.HTTP_200_OK)
         return res
 

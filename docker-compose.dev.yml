@@ -36,7 +36,7 @@ services:
       dockerfile: ./dockerfiles/django/Dockerfile.dev
     container_name: django_test
     working_dir: /backend
-    command: sh -c "source ./.venv/bin/activate && python ./manage.py migrate && python ./manage.py createsuperuser --noinput && python python ./manage.py runserver 0.0.0.0:8001"
+    #command: sh -c "source ./.venv/bin/activate && python ./manage.py migrate && python ./manage.py createsuperuser --noinput && python ./manage.py runserver 0.0.0.0:8000"
     tty: true
     environment:
       - DJANGO_DEVELOPMENT=true
