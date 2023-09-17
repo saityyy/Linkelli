@@ -8,7 +8,6 @@ export default async function set_post(body) {
         credentials: "include",
     })
         .then((res) => res.json())
-    console.log(csrftoken["x-csrftoken"])
     const response = await fetch(url,
         {
             mode: "cors",
@@ -20,5 +19,6 @@ export default async function set_post(body) {
             },
             body: JSON.stringify(body)
         })
+        .then((res) => res.json())
     return response
 }

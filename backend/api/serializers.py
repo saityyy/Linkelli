@@ -13,6 +13,8 @@ from .models import Post, Link, Keyword, UserInfo
 from rest_framework import serializers
 from django.contrib import auth
 from rest_framework.response import Response
+from rest_framework import status
+from django.conf import settings
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -106,28 +108,30 @@ class PostSerializer(serializers.ModelSerializer):
         post_object = Post.objects.create(**validated_data)
         for link_data in links_data:
             link_data["post"] = post_object
-            title, img_url = fetch_site_icon(link_data["link"])
-            link_data["img_url"] = img_url
-            link_data["title"] = title
+            req_result=fetch_website_info(link_data["link"])
+            print(req_result)
+            if req_result=="InvalidURL":
+                return Response({"error_code": "InvalidURL"},
+                                status=status.HTTP_400_BAD_REQUEST)
+            title,img_url=req_result
+            link_data["img_url"]=img_url
+            link_data["title"] =title
+            print(link_data)
             Link.objects.create(**link_data)
         for keyword_data in keywords_data:
             keyword_data["post"] = post_object
             Keyword.objects.create(**keyword_data)
-        return Response({"status": "set post"})
+        return Response({"error_code":""},status=status.HTTP_200_OK)
 
 
-def fetch_site_icon(url):
-    html = requests.get(url).content
+def fetch_website_info(url):
+    try:
+        html = requests.get(url).content
+    except:
+        return "InvalidURL"
     soup = BeautifulSoup(html, 'html.parser')
     title = soup.find("title").get_text()
     up = urlparse(url)
     img_url = ("http://www.google.com/s2/favicons?domain={}://{}".format(
         up.scheme, up.hostname))
-    img_file_name = up.hostname + ".png"
-    # img_file_name = hashlib.md5(img_file_name.encode()).hexdigest()
-    if img_file_name not in os.listdir("./api/static/images/"):
-        img = requests.get(img_url)
-        image = Image.open(io.BytesIO(img.content))
-        image.save("./api/static/images/{}".format(img_file_name))
-
-    return title, img_url
+    return (title,img_url)

@@ -47,6 +47,7 @@ const Post = (({ post, newLimit, isLast }) => {
                 <ul>
                     {post.links.map((link, index) => (
                         <li key={index.toString()}>
+                            {/* <p>{link.link}</p> */}
                             <a href={link.link} target="_blank" referer="noopener">
                                 <img src={link.img_url} width={20} height={20} alt={"website_image"} />
                                 <p>{link.title}</p>

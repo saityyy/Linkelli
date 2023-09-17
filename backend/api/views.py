@@ -270,9 +270,8 @@ class PostViewSet(viewsets.ModelViewSet):
         post_data["post_sender"] = user_info
         serializer = PostSerializer(data=post_data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-        res = Response({"result": "success set post"},
-                       status=status.HTTP_200_OK)
+        res=serializer.save()
+        print(type(res))
         return res
 
 
