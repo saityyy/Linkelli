@@ -25,7 +25,7 @@ export default function Header() {
             </div>
         )
     }
-    else if (userinfo.display_name !== "Guest") {
+    else {
         return (
             <div className={styles.header_container}>
                 {common_html}
@@ -44,21 +44,5 @@ export default function Header() {
                 </div>
             </div>
         )
-    }
-    else {
-        return (
-            <div className={styles.header_container}>
-                {common_html}
-                <div className={styles.not_signin}>
-                    <p>Not Signed In</p>
-                    <div className={styles.signin_button}>
-                        <a href={signInUrl}>
-                            Sign In
-                        </a>
-                    </div>
-                </div>
-            </div>
-        )
-
     }
 }

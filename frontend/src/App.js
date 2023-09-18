@@ -13,7 +13,9 @@ export default function App() {
   const [userinfo, setUserinfo] = useState()
   useEffect(() => {
     const f = async () => {
-      const data = await get_user_info()
+      let data = await get_user_info()
+      if (data.status === 401) window.location.href = "/accounts/login"
+      data = await data.json()
       setUserinfo(data)
     }
     f()

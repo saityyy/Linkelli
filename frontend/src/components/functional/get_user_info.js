@@ -18,8 +18,5 @@ export default async function get_user_info() {
                 "x-csrftoken": csrftoken["x-csrftoken"],
             },
         })
-        .then((res) => {
-            return res.json()
-        });
     return data
 }
