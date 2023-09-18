@@ -111,7 +111,7 @@ class PostSerializer(serializers.ModelSerializer):
             req_result=fetch_website_info(link_data["link"])
             print(req_result)
             if req_result=="InvalidURL":
-                return Response({"error_code": "InvalidURL"},
+                return Response({"error_code": "InvalidURL","invalid_url":link_data["link"]},
                                 status=status.HTTP_400_BAD_REQUEST)
             title,img_url=req_result
             link_data["img_url"]=img_url

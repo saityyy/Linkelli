@@ -1,29 +1,30 @@
-import React from "react"
+import { useState } from "react"
 import set_post from "../components/functional/set_post"
 import styles from "./share.module.scss"
 import Keywords from "../components/Share/Keywords"
 import Links from "../components/Share/Links"
 import Comment from "../components/Share/Comment"
+import ShowErrorMessage from "../components/Share/ShowErrorMessage"
 
 export default function Share() {
+    const [errorMessage, setErrorMessage] = useState("")
     let formdata_ini = localStorage.getItem("formdata")
     if (!formdata_ini) {
         formdata_ini = JSON.stringify({
-            "keywords": [{ "keyword": "test" }],
-            "links": [{ "link": "https://saity.dev" }],
+            "keywords": [{ "keyword": "" }],
+            "links": [{ "link": "" }],
             "comment": "test share"
         })
         localStorage.setItem("formdata", formdata_ini)
     }
     formdata_ini = JSON.parse(formdata_ini)
-    const [formdata, setFormdata] =
-        React.useState(formdata_ini)
+    const [formdata, setFormdata] = useState(formdata_ini)
     const onChange = (event) => {
         const input_content = event.target.className.split("_")[0]
         const idx = event.target.className.split("_")[1]
         setFormdata((prev) => {
             const ret = JSON.parse(JSON.stringify(prev))//deep copy
-            if (idx === "none") ret[input_content] = event.target.value
+            if (input_content === "comment") ret[input_content] = event.target.value
             else if (input_content === "keywords")
                 ret.keywords[parseInt(idx)].keyword = event.target.value
             else if (input_content === "links")
@@ -61,13 +62,17 @@ export default function Share() {
         body.links = body.links.filter((l) => l.link !== "")
         console.log(body)
         const response = await set_post(body)
-        console.log(response)
         if (response.status === 200) window.location.href = "/"
+        const result = await response.json()
+        setErrorMessage(result)
+        window.location.href = "#top"
+
     }
 
     return (
         <div className={styles.share_container}>
-            <p>Share</p>
+            <ShowErrorMessage
+                errorMessage={errorMessage} />
             <Comment
                 comment={formdata.comment}
                 onChange={onChange} />

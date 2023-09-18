@@ -1,0 +1,9 @@
+@import "../../common_variables.scss";
+
+.error_message_container {
+    p {
+        color: $warning_char_color;
+        font-size: 16px;
+        text-align: center;
+    }
+}

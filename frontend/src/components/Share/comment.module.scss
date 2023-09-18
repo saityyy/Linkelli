@@ -1,0 +1,19 @@
+@import "../../common_variables.scss";
+
+.comment_container {
+    margin-bottom: 50px;
+
+    p {
+        text-align: center;
+        font-size: 24px;
+    }
+
+    textarea {
+        display: block;
+        margin: 0 auto;
+        padding: 10px;
+        width: 80%;
+        height: 400px;
+        font-size: $pc_text_size
+    }
+}

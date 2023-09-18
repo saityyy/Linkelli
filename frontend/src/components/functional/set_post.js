@@ -19,6 +19,6 @@ export default async function set_post(body) {
             },
             body: JSON.stringify(body)
         })
-        .then((res) => res.json())
+    //.then((res) => res.json())
     return response
 }

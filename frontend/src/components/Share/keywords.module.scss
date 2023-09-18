@@ -1,0 +1,42 @@
+@import "../../common_variables.scss";
+
+.keywords_container {
+    margin-bottom: 50px;
+
+    p {
+        text-align: center;
+        font-size: 24px;
+    }
+
+    .change_input_num {
+        width: min(50%, 400px);
+        margin: 0 auto;
+        display: flex;
+        flex: auto;
+        justify-content: space-around;
+
+        button {
+            width: 30%;
+            height: 32px;
+            font-size: 24px;
+        }
+    }
+
+    ul {
+        padding: 0;
+
+        li {
+            list-style: none;
+            margin-bottom: 16px;
+
+            textarea {
+                display: block;
+                margin: 0 auto;
+                padding: 10px;
+                width: 80%;
+                height: 16px;
+                font-size: 16px;
+            }
+        }
+    }
+}

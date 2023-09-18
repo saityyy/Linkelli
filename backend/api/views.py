@@ -264,6 +264,15 @@ class PostViewSet(viewsets.ModelViewSet):
         if len(post_data["keywords"]) > 5:
             return Response({"error_code": "TooManyKeywordsError"},
                             status=status.HTTP_400_BAD_REQUEST)
+        if len(post_data["links"]) == 0:
+            return Response({"error_code": "NoLinkError"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        if len(post_data["keywords"]) ==0:
+            return Response({"error_code": "NoKeywordError"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        if len(post_data["comment"])==0:
+            return Response({"error_code": "NoCommentError"},
+                            status=status.HTTP_400_BAD_REQUEST)
         user = User.objects.get(username=request.user.username)
         user_info = UserInfoSerializer(
             UserInfo.objects.get(user=user)).data
