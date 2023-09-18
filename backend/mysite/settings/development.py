@@ -11,11 +11,6 @@ DEBUG = True
 ORIGIN_NAME="http://127.0.0.1"
 ALLOWED_HOSTS = ["127.0.0.1", "localhost","django"]
 
-LOGIN_REDIRECT_URL = os.path.join(
-    ORIGIN_NAME,
-    '/user/settings?redirect=',
-    ORIGIN_NAME
-)
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
@@ -32,7 +27,6 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     },
 }
-ACCOUNT_LOGOUT_REDIRECT_URL = ORIGIN_NAME
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = "None"
 ACCESS_CONTROL_ALLOW_ORIGIN = ["*"]
@@ -47,4 +41,5 @@ CORS_ORIGIN_WHITELIST = []
 CSRF_TRUSTED_ORIGINS = [
     ORIGIN_NAME
 ]
+
 

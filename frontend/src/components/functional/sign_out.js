@@ -1,8 +1,6 @@
 export default async function SignOut() {
-    const csrf_url = process.env.REACT_APP_API_SERVER_ORIGIN
-        + "/api/v1/csrf/"
-    const url = process.env.REACT_APP_API_SERVER_ORIGIN
-        + "/accounts/logout/"
+    const csrf_url = "/api/v1/csrf/"
+    const url = "/accounts/logout/"
     const csrftoken = await fetch(csrf_url, {
         mode: "cors",
         credentials: "include",
@@ -20,5 +18,5 @@ export default async function SignOut() {
             },
         })
     console.log(response)
-    window.location.href = "/"
+    window.location.href = "/accounts/login"
 }
