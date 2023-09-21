@@ -8,7 +8,7 @@ export default function Header() {
         + "/accounts/google/login/"
     const common_html = (
         <a href="/" className={styles.logo_container}>
-            <img src={"/logo.svg"} width={40} height={40} alt={"logo"} />
+            <img src={"/logo.png"} width={60} height={60} alt={"logo"} />
             <p>Linkelli</p>
         </a>
     )

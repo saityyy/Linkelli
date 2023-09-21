@@ -131,9 +131,9 @@ class UserViewSet(viewsets.ModelViewSet):
         icon_path=os.path.join(settings.STATIC_ROOT, "./images/user_icons/")
         if os.environ["DJANGO_DEVELOPMENT"]:
             icon_path = "./api/static/images/user_icons/"
-        ext = img.name.split(".")[-1].lower()
+        #ext = img.name.split(".")[-1].lower()
         user_icon_dir=os.path.join(icon_path,user_hash_id)
-        filename = "{}.{}".format("icon",ext)
+        filename = "icon.png"
         if not os.path.exists(user_icon_dir):
             os.mkdir(user_icon_dir)
             FileSystemStorage(

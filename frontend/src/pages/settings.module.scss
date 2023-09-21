@@ -1,1 +1,64 @@
 @import "../common_variables.scss";
+
+.settings_container {
+    padding: 30px;
+
+    h1 {
+        margin: 0;
+        font-size: $pc_strong_size;
+    }
+
+    .button {
+        width: 500px;
+    }
+
+}
+
+.setting_item_name {
+    font-size: $pc_text_size;
+    margin: 10px 0;
+}
+
+.setting_display_name {
+    display: block;
+    margin-bottom: 40px;
+
+    input {
+        width: 400px;
+        height: 40px;
+        font-size: $pc_text_size;
+    }
+}
+
+.setting_icon_image {
+    display: block;
+    margin-bottom: 40px;
+
+    img,
+    label {
+        width: 150px;
+        height: 150px;
+    }
+
+    label {
+        display: block;
+        border: 3px solid $border_color;
+
+        &:hover {
+            transition: background-color 0.1s ease, border-color 0.3s ease;
+            border: 3px solid $main_color;
+            background-color: $background_color;
+        }
+    }
+
+    input[type="file"] {
+        display: none;
+    }
+}
+
+.setting_anonymous_mode {}
+
+.change_settings_button {
+    width: 300px;
+    height: 50px;
+}

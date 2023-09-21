@@ -5,7 +5,7 @@ export default function Switch(props) {
     const isAnonymous = props.init_value
     console.log(isAnonymous)
     return (
-        <label for="switch" className={styles.anonymous_mode}>
+        <label htmlFor="switch" className={styles.anonymous_mode}>
             <div className={styles.switch}>
                 <input
                     type="checkbox"
@@ -17,6 +17,6 @@ export default function Switch(props) {
                 <div className={styles.circle}></div>
                 <div className={styles.base}></div>
             </div>
-        </label>
+        </label >
     )
 }
