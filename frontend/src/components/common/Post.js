@@ -20,10 +20,14 @@ const Post = (({ post, newLimit, isLast }) => {
     const hour = new Date(post.created).getHours()
     const minute = (new Date(post.created).getMinutes()).toString().padStart(2, "0")
     const post_created_time = `${y} ${m}/${d}  ${hour}:${minute}`
+    let IsAnonymous = "public_user"
+    if (post.post_sender.anonymous_mode === true) {
+        IsAnonymous = "anonymous_user"
+    }
     return (
         <div ref={postRef} className={styles.post_container}>
             <div className={styles.poster_content}>
-                <div className={styles.poster_info}>
+                <div className={`${styles.poster_info} ${styles[IsAnonymous]}`}>
                     <a href={`/user/${post.post_sender.display_name}`}>
                         <img src={post.post_sender.icon_url} width={30} height={30} alt={"website_image"} />
                     </a>

@@ -80,6 +80,8 @@ services:
       context: .
       dockerfile: ./dockerfiles/react/Dockerfile
     container_name: react
+    working_dir: /frontend
+    command: "npm run start"
     tty: true
     volumes:
       - type: bind

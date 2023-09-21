@@ -1,7 +1,6 @@
 import React, { useContext } from "react"
 import styles from "./settings.module.scss"
 import set_user_info from "components/functional/set_user_info"
-import get_user_info from "components/functional/get_user_info"
 import Loading from "components/common/Loading"
 import Switch from "components/common/Switch"
 import { useSearchParams } from "react-router-dom"
@@ -49,14 +48,16 @@ export default function Settings() {
             changeUserinfoField(className, inputValue)
         }
     }
-    const { userinfo, _ } = useContext(UserinfoContext)
-    if (userinfo !== undefined && isLoading) {
-        const is_exist_user_info = userinfo.exist_user_info
+    const { myUserinfo, _ } = useContext(UserinfoContext)
+    if (myUserinfo !== undefined && isLoading) {
+        const is_exist_user_info = myUserinfo.exist_user_info
         if (is_exist_user_info && redirect_url)
             window.location.href = "/"
         else {
-            setIsLoading(false)
-            changeUserinfoField("anonymous_mode", userinfo.anonymous_mode)
+            setTimeout(() => {
+                setIsLoading(false)
+                changeUserinfoField("anonymous_mode", myUserinfo.anonymous_mode)
+            }, 500)
         }
     }
     if (isLoading) return (

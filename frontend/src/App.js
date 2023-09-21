@@ -1,7 +1,7 @@
 import styles from "./app.module.scss"
 import React, { createContext, useState, useEffect } from "react"
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import get_user_info from "components/functional/get_user_info";
+import get_my_info from "components/functional/get_my_info";
 import Header from "components/common/Header"
 import Home from "./pages/Home"
 import User from "./pages/User"
@@ -10,18 +10,18 @@ import Settings from "./pages/Settings"
 
 export const UserinfoContext = createContext()
 export default function App() {
-  const [userinfo, setUserinfo] = useState()
+  const [myUserinfo, setMyUserinfo] = useState()
   useEffect(() => {
     const f = async () => {
-      let data = await get_user_info()
+      let data = await get_my_info()
       if (data.status === 401) window.location.href = "/accounts/login"
       data = await data.json()
-      setUserinfo(data)
+      setMyUserinfo(data)
     }
     f()
   }, [])
   return (
-    <UserinfoContext.Provider value={{ userinfo, setUserinfo }}>
+    <UserinfoContext.Provider value={{ myUserinfo, setMyUserinfo }}>
       <div className={styles.main_container}>
         <header>
           <Header />

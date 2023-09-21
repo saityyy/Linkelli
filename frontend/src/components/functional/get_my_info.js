@@ -1,8 +1,8 @@
-export default async function get_user_info(display_name) {
+export default async function get_my_info() {
     const csrf_url = process.env.REACT_APP_API_SERVER_ORIGIN
         + "/api/v1/csrf/"
     const url = process.env.REACT_APP_API_SERVER_ORIGIN
-        + `/api/v1/user/${display_name}/get_user_info/`
+        + "/api/v1/user/get_my_info/"
     const csrftoken = await fetch(csrf_url, {
         mode: "cors",
         credentials: "include",

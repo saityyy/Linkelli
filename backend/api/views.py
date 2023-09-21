@@ -64,8 +64,8 @@ class UserViewSet(viewsets.ModelViewSet):
     ttp_method_names = ['get', "post"]
 
     @action(methods=["get"], detail=False,
-            url_path="get_user_info", url_name="get_user_info")
-    def get_user_info(self, request, pk=None):
+            url_path="get_my_info", url_name="get_my_info")
+    def get_my_info(self, request, pk=None):
         if request.user.is_authenticated:
             user_id=uuid.uuid3(uuid.NAMESPACE_X500,
                                request.user.username).hex
@@ -85,11 +85,22 @@ class UserViewSet(viewsets.ModelViewSet):
             result["exist_user_info"] = True
             return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
         else:
-            guest_account = {
-                "display_name": "Guest",
-                "icon_url": None
-            }
-            return JsonResponse(guest_account, safe=False)
+            return Response({"error_code":"NotAuthorization"},status=status.HTTP_401_UNAUTHORIZED)
+
+    @action(methods=["get"], detail=True,
+            url_path="get_user_info", url_name="get_user_info")
+    def get_user_info(self, request, pk=None):
+        if request.user.is_authenticated:
+            try:
+                user_info = UserInfo.objects.get(display_name=pk)
+            except ObjectDoesNotExist:
+                return  Response({"error_code":"UserNotExist"},
+                                 status=status.HTTP_400_BAD_REQUEST)
+            result = UserInfoSerializer(user_info).data
+            print(result)
+            return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
+        else:
+            return Response({"error_code":"NotAuthorization"},status=status.HTTP_401_UNAUTHORIZED)
 
     @action(methods=["post"], detail=False,
             permission_classes=[IsAuthenticated],

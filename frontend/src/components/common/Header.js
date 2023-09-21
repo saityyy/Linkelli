@@ -1,5 +1,4 @@
 import { useState, useEffect, useContext } from "react"
-import get_user_info from "../functional/get_user_info"
 import styles from "./header.module.scss"
 import { UserinfoContext } from "../../App"
 
@@ -13,9 +12,8 @@ export default function Header() {
             <p>Linkelli</p>
         </a>
     )
-    const { userinfo, _ } = useContext(UserinfoContext)
-    console.log(userinfo)
-    if (userinfo === undefined) {
+    const { myUserinfo, _ } = useContext(UserinfoContext)
+    if (myUserinfo === undefined) {
         return (
             <div className={styles.header_container}>
                 {common_html}
@@ -31,10 +29,10 @@ export default function Header() {
                 {common_html}
                 <div className={styles.account_content}>
                     <div className={styles.greeting}>
-                        <p>Hello,<br /> {userinfo.display_name}!</p>
+                        <p>Hello,<br /> {myUserinfo.display_name}!</p>
                     </div>
-                    <a href={"/user/" + userinfo.display_name.toString()} className={styles.account_icon}>
-                        <img src={userinfo.icon_url} width={40} alt="account icon" />
+                    <a href={"/user/" + myUserinfo.display_name.toString()} className={styles.account_icon}>
+                        <img src={myUserinfo.icon_url} width={40} alt="account icon" />
                     </a>
                 </div>
                 <div className={styles.post_button}>

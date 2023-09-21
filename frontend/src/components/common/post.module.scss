@@ -44,6 +44,12 @@
 
     }
 
+    .anonymous_user {
+        a {
+            pointer-events: none;
+        }
+    }
+
 
     .post_info {
         margin: 16px;
