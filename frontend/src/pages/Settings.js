@@ -121,9 +121,9 @@ export default function Settings() {
                 <Button
                     clickFunc={send_user_info}
                     href={undefined}
-                    className={`${styles.change_settings_button}`}
-                    text={"設定を変更する"}
-                />
+                    className={`${styles.change_settings_button}`}>
+                    設定を変更する
+                </Button >
             </div>
         )
     }

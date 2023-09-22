@@ -1,12 +1,21 @@
 import styles from "./links.module.scss"
+import Button from "../common/Button"
 
 export default function Links(props) {
     return (
         <div className={styles.links_container}>
             <p>URLリンク</p>
             <div className={styles.change_input_num}>
-                <button onClick={() => props.addInput("links")}>+</button>
-                <button onClick={() => props.reduceInput("links")}>-</button>
+                <Button
+                    clickFunc={() => props.addInput("links")}
+                    href={undefined}
+                    className="plus_button"
+                >+</Button>
+                <Button
+                    clickFunc={() => props.reduceInput("links")}
+                    href={undefined}
+                    className="minus_button"
+                >-</Button>
             </div>
             <ul>
                 {props.links.map((link, i) => (

@@ -13,7 +13,7 @@ export default function Share() {
         formdata_ini = JSON.stringify({
             "keywords": [{ "keyword": "" }],
             "links": [{ "link": "" }],
-            "comment": "test share"
+            "comment": ""
         })
         localStorage.setItem("formdata", formdata_ini)
     }
@@ -62,7 +62,10 @@ export default function Share() {
         body.links = body.links.filter((l) => l.link !== "")
         console.log(body)
         const response = await set_post(body)
-        if (response.status === 200) window.location.href = "/"
+        if (response.status === 200) {
+            localStorage.removeItem("formdata")
+            window.location.href = "/"
+        }
         const result = await response.json()
         setErrorMessage(result)
         window.location.href = "#top"

@@ -5,7 +5,7 @@ export default function Button(props) {
         <a href={props.href}
             className={`${styles.button} ${props.className}`}
             onClick={() => props.clickFunc()}>
-            <p>{props.text}</p>
+            <span>{props.children}</span>
         </a>
     )
 
