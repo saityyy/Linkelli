@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react"
 import styles from "./header.module.scss"
 import { UserinfoContext } from "../../App"
+import Button from "./Button"
 
 export default function Header() {
     const signInUrl =
@@ -35,11 +36,12 @@ export default function Header() {
                         <img src={myUserinfo.icon_url} width={40} alt="account icon" />
                     </a>
                 </div>
-                <div className={styles.post_button}>
-                    <a href="/share">
-                        Share
-                    </a>
-                </div>
+                <Button
+                    href="/share"
+                    className={styles.post_button}
+                >
+                    投稿
+                </Button>
             </div>
         )
     }

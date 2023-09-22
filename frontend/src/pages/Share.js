@@ -91,7 +91,7 @@ export default function Share() {
                 onChange={onChange} />
             <div className={styles.send_post_button}>
                 <p onClick={send_post}>
-                    Share your linkelli
+                    投稿する
                 </p>
             </div>
         </div>

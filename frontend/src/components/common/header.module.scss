@@ -40,28 +40,4 @@
             color: $main_char_color;
         }
     }
-
-    .not_signin {
-        .signin_button {
-            height: 40px;
-            width: 80px;
-            background-color: $main_color;
-            display: flex;
-            margin: 0 auto;
-            border-radius: 4px;
-            border: 1px solid white;
-
-            &:hover {
-                transition: background-color 0.3s ease, border-color 0.3s ease;
-                border: 1px solid $hover_border_color;
-            }
-        }
-
-        a {
-            margin: auto;
-            text-decoration: none;
-            text-align: center;
-            color: $main_char_color;
-        }
-    }
 }
