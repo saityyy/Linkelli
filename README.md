@@ -24,7 +24,7 @@ source ./.venv/bin/activate
 python ./manage.py runserver 0.0.0.0:8000
 ```  
 
-GoogleとGithubのAPIキーが必要なので、"./backend/"下に.envファイルを以下のフォーマットで作成してください。  
+GoogleとGithubのAPIキーが必要なので、"./backend/"下に.envファイルを以下のフォーマットで作成します。  
 ```
 google_client_id=<google_cliend_id>
 google_secret=<google_secret>
