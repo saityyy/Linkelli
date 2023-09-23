@@ -129,7 +129,7 @@ class UserViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
         icon_path=os.path.join(settings.STATIC_ROOT, "./images/user_icons/")
-        if os.environ["DJANGO_DEVELOPMENT"]:
+        if os.environ["DJANGO_MODE"]=="development":
             icon_path = "./api/static/images/user_icons/"
         #ext = img.name.split(".")[-1].lower()
         user_icon_dir=os.path.join(icon_path,user_hash_id)
