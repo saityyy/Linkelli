@@ -94,8 +94,6 @@ class PostSerializer(serializers.ModelSerializer):
         ]
 
     def get_post_sender(self,value):
-        print("get_pose_sender")
-        print(value)
         return value
 
     def create(self, validated_data):
@@ -109,14 +107,12 @@ class PostSerializer(serializers.ModelSerializer):
         for link_data in links_data:
             link_data["post"] = post_object
             req_result=fetch_website_info(link_data["link"])
-            print(req_result)
             if req_result=="InvalidURL":
                 return Response({"error_code": "InvalidURL","invalid_url":link_data["link"]},
                                 status=status.HTTP_400_BAD_REQUEST)
             title,img_url=req_result
             link_data["img_url"]=img_url
             link_data["title"] =title
-            print(link_data)
             Link.objects.create(**link_data)
         for keyword_data in keywords_data:
             keyword_data["post"] = post_object

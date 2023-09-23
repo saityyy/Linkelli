@@ -42,7 +42,6 @@ def csrf(request):
 
 def get_user_info(request):
     if request.user.is_authenticated:
-        print(request.user)
         social_account = SocialAccount.objects.get(user=request.user)
         serializer = UserSerializer(social_account)
         return JsonResponse(serializer.data, safe=False)
@@ -97,7 +96,6 @@ class UserViewSet(viewsets.ModelViewSet):
                 return  Response({"error_code":"UserNotExist"},
                                  status=status.HTTP_400_BAD_REQUEST)
             result = UserInfoSerializer(user_info).data
-            print(result)
             return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
         else:
             return Response({"error_code":"NotAuthorization"},status=status.HTTP_401_UNAUTHORIZED)
@@ -247,7 +245,6 @@ class PostViewSet(viewsets.ModelViewSet):
         keyword = request.query_params["keyword"]
         posts = Post.objects.filter(keywords__keyword__exact=keyword)
         sum_record = len(posts)
-        print(sum_record)
         start = min(start, sum_record)
         end = min(end, sum_record)
         show_posts = posts.order_by("-created")[start:end]
@@ -291,6 +288,5 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = PostSerializer(data=post_data)
         serializer.is_valid(raise_exception=True)
         res=serializer.save()
-        print(type(res))
         return res
 

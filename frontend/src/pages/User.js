@@ -35,7 +35,6 @@ function User() {
             setImgurl(fetchUserinfo.icon_url)
         }
         else {
-            console.log(fetch_result)
             setNotExistFlag(true)
         }
 
@@ -64,7 +63,6 @@ function User() {
     }
     else {
         let userActionContainer = (<></>)
-        console.log(myUserinfo)
         if (myUserinfo.display_name === display_name) {
             userActionContainer = (
                 <div className={styles.user_action_items}>

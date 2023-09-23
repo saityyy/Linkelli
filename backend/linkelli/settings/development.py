@@ -27,6 +27,20 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     },
 }
+# Database
+# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "linkelli",
+        "USER": "linkelli",
+        "PASSWORD": "linkelli",
+        "HOST": "db",
+        "PORT": "3306",
+    }
+}
+
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = "None"
 ACCESS_CONTROL_ALLOW_ORIGIN = ["*"]
