@@ -2,5 +2,5 @@
 .vscode
 .venv
 /linkelli/app_static/
-/api/static/images/
+/api/static/images/user_icons/
 __pycache__
