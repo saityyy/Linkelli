@@ -5,11 +5,14 @@ services:
     build:
       context: .
       dockerfile: ./dockerfiles/mysql/Dockerfile
-    container_name: mysql_test
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: linkelli
+      MYSQL_PASSWORD: linkelli
+      MYSQL_DATABASE: linkelli
     ports:
       - "3306:3306"
-    environment:
-      TZ: "Asia/Tokyo"
     healthcheck:
       test:
         [
@@ -26,7 +29,7 @@ services:
       retries: 3
       start_period: 1s
     volumes:
-      - ./my.cnf:/etc/mysql/conf.d/my.cnf
+      - .dockerfiles/mysql/config/my.cnf:/etc/mysql/conf.d/my.cnf
     networks:
       - network
 
@@ -34,9 +37,9 @@ services:
     build:
       context: .
       dockerfile: ./dockerfiles/django/Dockerfile.dev
-    container_name: django_test
+    container_name: django
     working_dir: /backend
-    #command: sh -c "source ./.venv/bin/activate && python ./manage.py migrate && python ./manage.py createsuperuser --noinput && python ./manage.py runserver 0.0.0.0:8000"
+    command: sh -c "source ./.venv/bin/activate && python ./manage.py migrate&&python ./manage.py collectstatic&&sh "
     tty: true
     environment:
       - DJANGO_DEVELOPMENT=true
@@ -104,3 +107,5 @@ volumes:
     name: venv_volume
 networks:
   network:
+
+

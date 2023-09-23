@@ -1,1 +1,4 @@
 .vscode
+.secret
+db_root_password.txt
+db_password.txt
