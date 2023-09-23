@@ -9,13 +9,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = False
 
 ORIGIN_NAME="https://linkelli.net"
-ALLOWED_HOSTS = ["linkelli.net","127.0.0.1","django"]
+ALLOWED_HOSTS = ["linkelli.net","django"]
 
-LOGIN_REDIRECT_URL = os.path.join(
-    ORIGIN_NAME,
-    '/user/settings?redirect=',
-    ORIGIN_NAME
-)
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
@@ -34,6 +29,7 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 ACCOUNT_LOGOUT_REDIRECT_URL = ORIGIN_NAME
 CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE=True
 CSRF_COOKIE_SAMESITE = "None"
 ACCESS_CONTROL_ALLOW_ORIGIN = ["*"]
 ACCESS_CONTROL_ALLOW_METHOD = ["*"]

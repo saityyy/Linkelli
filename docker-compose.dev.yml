@@ -42,7 +42,7 @@ services:
     command: sh -c "source ./.venv/bin/activate && python ./manage.py migrate&&python ./manage.py collectstatic&&sh "
     tty: true
     environment:
-      - DJANGO_DEVELOPMENT=true
+      - DJANGO_MODE=development
       - DJANGO_SUPERUSER_USERNAME=admin
       - DJANGO_SUPERUSER_EMAIL=admin@mail.com
       - DJANGO_SUPERUSER_PASSWORD=aaa

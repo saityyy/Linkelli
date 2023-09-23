@@ -1,7 +1,7 @@
 import os 
 
 from .base import *
-if os.environ["DJANGO_DEVELOPMENT"]:
+if os.environ["DJANGO_MODE"]=="development":
     print("development")
     from .development import *
 else:
