@@ -9,7 +9,7 @@ import get_user_post from "../components/functional/get_user_post"
 import get_user_info from "../components/functional/get_user_info"
 import styles from "./user.module.scss"
 
-const add_page = 5
+const add_page = 10
 function User() {
     const { display_name } = useParams();
     const { myUserinfo, _ } = useContext(UserinfoContext)

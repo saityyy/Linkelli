@@ -24,7 +24,7 @@
     margin-bottom: 40px;
 
     input {
-        width: 400px;
+        width: min(400px, 80%);
         height: 40px;
         font-size: $pc_text_size;
     }
@@ -56,9 +56,15 @@
     }
 }
 
-.setting_anonymous_mode {}
+.setting_anonymous_mode {
+    margin-bottom: 40px;
+
+    .show_detail_false {
+        display: none;
+    }
+}
 
 .change_settings_button {
-    width: 300px;
+    width: min(300px, 80%);
     height: 50px;
 }

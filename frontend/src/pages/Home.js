@@ -5,11 +5,12 @@ import styles from "./home.module.scss"
 import get_post from "../components/functional/get_post";
 import get_keyword_post from "../components/functional/get_keyword_post";
 import { useSearchParams } from "react-router-dom"
+import Loading from "../components/common/Loading"
 
 export default function Home() {
-    const add_page = 2
+    const add_page = 10
     const [posts, setPosts] = useState([]);
-    let [searchParams, setSearchParams] = useSearchParams()
+    let [searchParams, _] = useSearchParams()
     const [page, setPage] = useState(0);
     const fetchPost = async (start) => {
         let data = []

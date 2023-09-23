@@ -18,7 +18,7 @@ export default function Header() {
         return (
             <div className={styles.header_container}>
                 {common_html}
-                <div className={styles.account_content}>
+                <div className={styles.account_container}>
                     <p>loading...</p>
                 </div>
             </div>
@@ -28,9 +28,13 @@ export default function Header() {
         return (
             <div className={styles.header_container}>
                 {common_html}
-                <div className={styles.account_content}>
-                    <div className={styles.greeting}>
-                        <p>Hello,<br /> {myUserinfo.display_name}!</p>
+                <div className={styles.account_container}>
+                    <div className={styles.display_name}>
+                        <p>
+                            <span className={styles.hello}>Hello,<br />
+                            </span>
+                            {myUserinfo.display_name}
+                        </p>
                     </div>
                     <a href={"/user/" + myUserinfo.display_name.toString()} className={styles.account_icon}>
                         <img src={myUserinfo.icon_url} width={40} alt="account icon" />

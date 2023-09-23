@@ -1,17 +1,41 @@
-.main_container {
-  display: flex;
-  justify-content: center;
+@media screen and (min-width:531px) {
+  .main_container {
+    display: flex;
+    justify-content: center;
 
-  header {
-    text-align: center;
-    position: fixed;
-    top: 0;
-    left: 0;
+    header {
+      width: 200px;
+      text-align: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+
+    }
+
+    main {
+      width: min(1400px, 80%);
+      margin-left: 230px;
+    }
   }
+}
 
+@media screen and (max-width:530px) {
+  .main_container {
+    display: flex;
+    justify-content: center;
 
-  main {
-    width: 1400px;
-    margin-left: 230px;
+    header {
+      width: 100%;
+      text-align: center;
+      position: fixed;
+      bottom: 0;
+      z-index: 999;
+
+    }
+
+    main {
+      width: 90%;
+      margin-bottom: 100px;
+    }
   }
 }

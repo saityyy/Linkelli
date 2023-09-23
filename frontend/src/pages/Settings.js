@@ -77,9 +77,7 @@ export default function Settings() {
         preprocess()
     }, [myUserinfo, imageRef])
     if (isLoading) return (
-        <div>
-            <Loading />
-        </div>
+        <Loading />
     )
     else {
         return (
@@ -115,8 +113,8 @@ export default function Settings() {
                         onChange={onChange}
                         className={"anonymous_mode"}
                     />
-                    <p className={styles[`anonymous_${myUserinfo.anonymous_mode}`]}>匿名モードをONにするとあなたのユーザー情報は他のユーザーから見られることがなくなります。
-                    </p>
+                    <p className={styles[`show_detail_${userInfo.anonymous_mode}`]}>※匿名モードをONにすると、あなたのユーザー情報は他のユーザーから見られることがなくなります。</p>
+                    <p className={styles[`show_detail_${!userInfo.anonymous_mode}`]}>※匿名モードをOFFにすると、投稿からあなたのユーザー情報が見られるようになります。</p>
                 </div>
                 <Button
                     clickFunc={send_user_info}
