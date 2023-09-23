@@ -1,4 +1,7 @@
 # Linkelli
+
+<img width="700" src="./demo.png">  
+
 https://linkelli.net  
 LinkelliはURLリンクを通して知識や情報を共有することを目的に作成されたSNSです。  
 基本的にユーザーネームやアイコンを設定できますが、匿名での投稿も可能なので、気軽にお試しください。  
