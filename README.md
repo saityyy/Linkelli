@@ -19,7 +19,10 @@ Google、またはGithubアカウントからでのログインが可能です�
 ```docker-compose -f docker-compose.dev.yml up -d```  
 
 Djangoは手動でサーバーを立てる必要があるので、コンテナにアタッチして以下のコマンドを入力します。  
-```python ./manage.py runserver 0.0.0.0:8000```  
+```
+source ./.venv/bin/activate  
+python ./manage.py runserver 0.0.0.0:8000
+```  
 
 GoogleとGithubのAPIキーが必要なので、"./backend/"下に.envファイルを以下のフォーマットで作成してください。  
 ```
