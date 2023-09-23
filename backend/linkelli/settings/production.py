@@ -8,6 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 DEBUG = False
 
+SECRET_KEY = env("DJANGO_SECRET_KEY")
 ORIGIN_NAME="https://linkelli.net"
 ALLOWED_HOSTS = ["linkelli.net","django"]
 
@@ -27,8 +28,6 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     },
 }
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
     "default": {
@@ -43,16 +42,8 @@ DATABASES = {
 ACCOUNT_LOGOUT_REDIRECT_URL = ORIGIN_NAME
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE=True
-CSRF_COOKIE_SAMESITE = "None"
-ACCESS_CONTROL_ALLOW_ORIGIN = ["*"]
+ACCESS_CONTROL_ALLOW_ORIGIN = [ORIGIN_NAME]
 ACCESS_CONTROL_ALLOW_METHOD = ["*"]
-CORS_ALLOW_HEADERS = [
-    "Content-type",
-    "x-csrftoken"
-]
-CORS_ALLOW_METHODS = ["*"]
-CORS_ALLOW_CREDENTIALS = True
-CORS_ORIGIN_WHITELIST = []
 CSRF_TRUSTED_ORIGINS = [
     ORIGIN_NAME
 ]

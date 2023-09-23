@@ -8,6 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 DEBUG = True
 
+SECRET_KEY = 'django-insecure-3o%$$qsrf&g-v_5b94acw_in8jqwx!7r2d3%i&(nk7fk6=9eus'
 ORIGIN_NAME="http://127.0.0.1"
 ALLOWED_HOSTS = ["*"]
 
