@@ -128,6 +128,6 @@ def fetch_website_info(url):
     soup = BeautifulSoup(html, 'html.parser')
     title = soup.find("title").get_text()
     up = urlparse(url)
-    img_url = ("http://www.google.com/s2/favicons?domain={}://{}".format(
+    img_url = ("https://www.google.com/s2/favicons?domain={}://{}".format(
         up.scheme, up.hostname))
     return (title,img_url)
