@@ -29,7 +29,6 @@ export default function Share() {
                 ret.keywords[parseInt(idx)].keyword = event.target.value
             else if (input_content === "links")
                 ret.links[parseInt(idx)].link = event.target.value
-            console.log(ret)
             localStorage.setItem("formdata", JSON.stringify(ret))
             return ret;
         })
@@ -60,7 +59,6 @@ export default function Share() {
         let body = JSON.parse(localStorage.getItem("formdata"))
         body.keywords = body.keywords.filter((k) => k.keyword !== "")
         body.links = body.links.filter((l) => l.link !== "")
-        console.log(body)
         const response = await set_post(body)
         if (response.status === 200) {
             localStorage.removeItem("formdata")

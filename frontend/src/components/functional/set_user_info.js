@@ -8,7 +8,6 @@ export default async function set_user_info(body) {
         credentials: "include",
     })
         .then((res) => res.json())
-    console.log(csrftoken)
     let result = {
         "ok": true,
         "body": {}

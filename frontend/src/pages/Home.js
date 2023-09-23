@@ -21,7 +21,6 @@ export default function Home() {
         else {
             data = await get_post(start, add_page)
         }
-        console.log(data)
         setPosts((prev) => {
             //useEffectが二回呼ばれるため（開発時）,同じ投稿が追加されるのを防ぐ
             const prevJSON = JSON.stringify(prev.slice(-data.length))

@@ -3,7 +3,6 @@ import { useRef } from "react"
 
 export default function Switch(props) {
     const isAnonymous = props.init_value
-    console.log(isAnonymous)
     return (
         <label htmlFor="switch" className={styles.anonymous_mode}>
             <div className={styles.switch}>

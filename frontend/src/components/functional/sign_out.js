@@ -6,7 +6,6 @@ export default async function SignOut() {
         credentials: "include",
     })
         .then((res) => res.json())
-    console.log(csrftoken["x-csrftoken"])
     const response = await fetch(url,
         {
             mode: "cors",
@@ -17,6 +16,5 @@ export default async function SignOut() {
                 "x-csrftoken": csrftoken["x-csrftoken"],
             },
         })
-    console.log(response)
     window.location.href = "/accounts/login"
 }

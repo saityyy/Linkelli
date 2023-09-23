@@ -67,7 +67,6 @@ export default function Settings() {
                     setIconImageURL(myUserinfo.icon_url)
                     setTimeout(() => {
                         setIsLoading(false)
-                        console.log(myUserinfo)
                         changeUserinfoField("anonymous_mode", myUserinfo.anonymous_mode)
                         changeUserinfoField("display_name", myUserinfo.display_name)
                     }, 500)
