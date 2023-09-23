@@ -294,17 +294,3 @@ class PostViewSet(viewsets.ModelViewSet):
         print(type(res))
         return res
 
-
-class GetPostViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
-
-    def get_queryset(self):
-        q_param = self.request.query_params
-        start, num = 0, 3
-        if "start" in q_param:
-            start = int(self.request.query_params.get("start"))
-        if "num" in q_param:
-            num = int(self.request.query_params.get("num"))
-        sum_record = len(Post.objects.all())
-        return Post.objects.all()[start:min(start + num, sum_record)]

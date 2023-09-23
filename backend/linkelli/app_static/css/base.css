@@ -1,0 +1,23 @@
+html {
+    background-color: white;
+}
+
+body {
+    background-color: #ffffff;
+    width: min(600px, 80%);
+    height: 800px;
+    margin: 0 auto;
+    padding: 50px;
+
+    .logo_image {
+        display: block;
+        margin: 0 auto;
+    }
+
+    .title {
+        font-size: 48px;
+        text-align: center;
+        margin: 0px;
+        margin-bottom: 50px;
+    }
+}

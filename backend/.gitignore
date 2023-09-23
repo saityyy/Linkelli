@@ -1,2 +1,6 @@
+.env
 .vscode
-./mysite/app_static
+.venv
+/linkelli/app_static/
+/api/static/images/
+__pycache__
