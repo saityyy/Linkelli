@@ -16,15 +16,25 @@ Google、またはGithubアカウントからでのログインが可能です�
 - 環境構築：Docker  
 
 開発環境は以下のコマンドでDockerコンテナを立ち上げて作成します。  
-```docker-compose -f docker-compose.dev.yml up -d```  
+```
+docker-compose -f docker-compose.dev.yml up -d
+```  
 
 Djangoは手動でサーバーを立てる必要があるので、コンテナにアタッチして以下のコマンドを入力します。  
 ```
 source ./.venv/bin/activate  
 python ./manage.py runserver 0.0.0.0:8000
 ```  
+Djangoのコンテナ上でAPIのテストケースを実行できます。  
+```
+python manage.py test api.tests -v 2
+```  
+以下のように各APIのテストケースが実行され、テストがすべてokを出力していれば問題ありません。  
 
-GoogleとGithubのAPIキーが必要なので、"./backend/"下に.envファイルを以下のフォーマットで作成します。  
+<img width="600" src="test_demo.png">  
+
+
+実際にlocalhost上で動かす場合にはGoogleとGithubのAPIキーが必要なので、"./backend/"下に.envファイルを以下のフォーマットで作成します。  
 ```
 google_client_id=<google_cliend_id>
 google_secret=<google_secret>
