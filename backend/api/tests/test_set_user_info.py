@@ -36,9 +36,8 @@ class SetUserInfoTest(APITestCase):
         res = self.client.post(
             self.url, data=user_info_data, secure=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data["action"],"create")
-        self.assertEqual(res.data["result"]["display_name"],"test")
-        self.assertEqual(res.data["result"]["anonymous_mode"],False)
+        self.assertEqual(res.data["display_name"],"test")
+        self.assertEqual(res.data["anonymous_mode"],False)
 
     def test_success_update_user_info(self):
         icon_path = "./api/tests/icon_images/linkelli_logo.png"
@@ -61,9 +60,8 @@ class SetUserInfoTest(APITestCase):
         }
         res = self.client.post(
             self.url, data=update_user_info_data)
-        self.assertEqual(res.data["action"],"update")
-        self.assertEqual(res.data["result"]["display_name"],"updated")
-        self.assertEqual(res.data["result"]["anonymous_mode"],True)
+        self.assertEqual(res.data["display_name"],"updated")
+        self.assertEqual(res.data["anonymous_mode"],True)
 
     def test_error_authentication_failed(self):
         self.client.logout()
@@ -154,3 +152,20 @@ class SetUserInfoTest(APITestCase):
             self.url, data=user_info_data, secure=True)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(res.data["error_code"], "InvalidFileType")
+
+    def test_error_too_big_image_size(self):
+        icon_path = "./api/tests/icon_images/linkelli_logo_1536.png"
+        with open(icon_path, "rb")as f:
+            icon_image_file = SimpleUploadedFile(
+                name="test.png",
+                content=f.read(),
+                content_type="image/png")
+        user_info_data = {
+            "display_name": "test",
+            "icon_image_file": icon_image_file,
+            "anonymous_mode": 'false'
+        }
+        res = self.client.post(
+            self.url, data=user_info_data, secure=True)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(res.data["error_code"], "TooBigImageSize")

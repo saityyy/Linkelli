@@ -49,16 +49,20 @@ class UserViewSet(viewsets.ModelViewSet):
         user_id=uuid.uuid3(uuid.NAMESPACE_X500,
                             request.user.username).hex
         user = User.objects.get(username=request.user.username)
+        no_settings=False
         try:
             user_info = UserInfo.objects.get(user=user)
         except ObjectDoesNotExist:
-            return Response(
-                        {"exist_user_info": False,
-                        "display_name": user_id[:10],
-                        "icon_url": "/app_static/images/user_icons/anonymous/icon.png"
-                        },status=status.HTTP_200_OK)
+            user_info=UserInfo.objects.create(
+                        user=user,
+                        display_name=user_id[:10],
+                        icon_url="/app_static/images/user_icons/anonymous/icon.png",
+                        anonymous_mode=False
+                        )
         result = UserInfoSerializer(user_info).data
-        result["exist_user_info"] = True
+        if result["display_name"]==user_id[:10]:
+            no_settings=True
+        result["no_settings"] = no_settings
         return Response(result, status=status.HTTP_200_OK)
 
     @action(methods=["get"], detail=True,
@@ -86,6 +90,9 @@ class UserViewSet(viewsets.ModelViewSet):
                             request.user.username).hex
         user = User.objects.get(username=request.user.username)
         img = request.data["icon_image_file"]
+        if img.size>300_000:#300kb
+            return Response({"error_code": "TooBigImageSize"},
+                            status=status.HTTP_400_BAD_REQUEST)
         if not hasattr(img, "content_type"):
             return Response({"error_code": "InvalidFileType"},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -138,29 +145,25 @@ class UserViewSet(viewsets.ModelViewSet):
                                   status=status.HTTP_400_BAD_REQUEST)
             except (KeyError,IndexError,TypeError):
                 pass
-        res,action=UserInfo.objects.update_or_create(
+        res,_=UserInfo.objects.update_or_create(
             user=user, defaults=setting_items)
-        if action:
-            return Response({"action":"create","result":UserInfoSerializer(res).data},
-                            status=status.HTTP_200_OK)
-        else:
-            return Response({"action":"update","result":UserInfoSerializer(res).data},
+        return Response(UserInfoSerializer(res).data,
                             status=status.HTTP_200_OK)
 
 def is_error_get_post(q):
     if (q.get("start") is None) or (q.get("num") is None):
-        return Response({"error_code": "BadQueryRequestError"},
+        return Response({"error_code": "BadQueryRequest"},
                         status=status.HTTP_400_BAD_REQUEST)
     if not q["start"].isdecimal() or not q["num"].isdecimal():
-        return Response({"error_code": "BadQueryRequestError"},
+        return Response({"error_code": "BadQueryRequest"},
                         status=status.HTTP_400_BAD_REQUEST)
     start, num = (int(q["start"]), int(q["num"]))
     end = start + num
     if start < 0 or num < 0:
-        return Response({"error_code": "BadQueryRequestError"},
+        return Response({"error_code": "BadQueryRequest"},
                         status=status.HTTP_400_BAD_REQUEST)
     if num >= 30:
-        return Response({"error_code": "TooManyRequestPostError"},
+        return Response({"error_code": "TooManyRequestPost"},
                         status=status.HTTP_400_BAD_REQUEST)
     return (start,end)
 
@@ -285,19 +288,19 @@ class PostViewSet(viewsets.ModelViewSet):
             errors=serializer.errors
             try:
                 if errors["comment"][0].code=="max_length":
-                    return Response({"error_code": "TooLongCommentError"},
+                    return Response({"error_code": "TooLongComment"},
                                     status=status.HTTP_400_BAD_REQUEST)
             except (KeyError,IndexError):
                 pass
             try:
                 if errors["comment"][0].code=="blank":
-                    return Response({"error_code": "NoCommentError"},
+                    return Response({"error_code": "NoComment"},
                                     status=status.HTTP_400_BAD_REQUEST)
             except (KeyError,IndexError,TypeError):
                 pass
             try:
                 if errors["links"]["non_field_errors"][0].code=="min_length":
-                    return Response({"error_code": "NoLinkError"},
+                    return Response({"error_code": "NoLink"},
                                     status=status.HTTP_400_BAD_REQUEST)
             except (KeyError,IndexError,TypeError):
                 pass
@@ -309,29 +312,29 @@ class PostViewSet(viewsets.ModelViewSet):
                 pass
             try:
                 if errors["keywords"]["non_field_errors"][0].code=="min_length":
-                    return Response({"error_code": "NoKeywordError"},
+                    return Response({"error_code": "NoKeyword"},
                                     status=status.HTTP_400_BAD_REQUEST)
             except (KeyError,IndexError,TypeError):
                 pass
             try:
                 if errors["keywords"][0]["keyword"][0].code=="max_length":
-                    return Response({"error_code": "TooLongKeywordError"},
+                    return Response({"error_code": "TooLongKeyword"},
                                     status=status.HTTP_400_BAD_REQUEST)
             except (KeyError,IndexError,TypeError):
                 pass
             try:
                 if errors["links"]["non_field_errors"][0].code=="duplicate_value":
-                    return Response({"error_code": "DuplicateLinkError"},
+                    return Response({"error_code": "DuplicateLink"},
                                     status=status.HTTP_400_BAD_REQUEST)
             except (KeyError,IndexError,TypeError):
                 pass
             try:
                 if errors["keywords"]["non_field_errors"][0].code=="duplicate_value":
-                    return Response({"error_code": "DuplicateKeywordError"},
+                    return Response({"error_code": "DuplicateKeyword"},
                                     status=status.HTTP_400_BAD_REQUEST)
             except (KeyError,IndexError,TypeError):
                 pass
-            return Response({"error_code":"BadRequestError"},
+            return Response({"error_code":"BadRequest"},
                             status=status.HTTP_400_BAD_REQUEST)
 
         res=serializer.save()

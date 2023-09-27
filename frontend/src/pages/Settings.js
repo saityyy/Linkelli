@@ -60,8 +60,9 @@ export default function Settings() {
     useEffect(() => {
         const preprocess = async () => {
             if (myUserinfo !== undefined && isLoading) {
-                const is_exist_user_info = myUserinfo.exist_user_info
-                if (is_exist_user_info && redirect_url)
+                console.log(myUserinfo)
+                const noSettings = myUserinfo.no_settings
+                if (!noSettings && redirect_url)
                     window.location.href = "/"
                 else {
                     setIconImageURL(myUserinfo.icon_url)

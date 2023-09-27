@@ -14,8 +14,8 @@ random.seed(42)
 
 class GetMyUserInfoTest(APITestCase):
     def setUp(self):
-        user = User.objects.create_user("test")
-        self.user2 = User.objects.create_user("test2")
+        user = User.objects.create_user("test")#userinfo作成済み
+        self.user2 = User.objects.create_user("test2")#userinfo未作成
         user_info_data = {
             "display_name": "test",
             "icon_url": "/static/images/user_icons/anonymous/icon.png",
@@ -30,6 +30,15 @@ class GetMyUserInfoTest(APITestCase):
         res = self.client.get(
             self.url, format="json")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data["no_settings"], False)
+
+    def test_success_new_create_my_info(self):
+        self.client.logout()
+        self.client.force_authenticate(user=self.user2)
+        res = self.client.get(
+            self.url, format="json")
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data["no_settings"], True)
 
     def test_error_authentication_failed(self):
         self.client.logout()
@@ -37,10 +46,3 @@ class GetMyUserInfoTest(APITestCase):
             self.url, format="json")
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_error_not_exist_my_info(self):
-        self.client.logout()
-        self.client.force_authenticate(user=self.user2)
-        res = self.client.get(
-            self.url, format="json")
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data["exist_user_info"], False)

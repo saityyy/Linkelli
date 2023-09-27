@@ -51,7 +51,7 @@ class SetPostsTest(APITestCase):
                                data,
                                format='json')
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(res.data["error_code"], "NoLinkError")
+        self.assertEqual(res.data["error_code"], "NoLink")
 
     def test_error_not_exist_keyword(self):
         data = {"comment": "test",
@@ -62,7 +62,7 @@ class SetPostsTest(APITestCase):
                                data,
                                format='json')
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(res.data["error_code"], "NoKeywordError")
+        self.assertEqual(res.data["error_code"], "NoKeyword")
 
     def test_error_too_many_links(self):
         data = {"comment": "test",
@@ -83,7 +83,7 @@ class SetPostsTest(APITestCase):
                                secure=True,
                                format='json')
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(res.data["error_code"], "BadRequestError")
+        self.assertEqual(res.data["error_code"], "BadRequest")
 
     def test_error_too_many_keywords(self):
         data = {"comment": "test",
@@ -104,7 +104,7 @@ class SetPostsTest(APITestCase):
                                secure=True,
                                format='json')
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(res.data["error_code"], "BadRequestError")
+        self.assertEqual(res.data["error_code"], "BadRequest")
 
     def test_error_not_https_link(self):
         data = {"comment": "test",
@@ -137,7 +137,7 @@ class SetPostsTest(APITestCase):
                                secure=True,
                                format='json')
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(res.data["error_code"], "DuplicateLinkError")
+        self.assertEqual(res.data["error_code"], "DuplicateLink")
 
     def test_error_same_keyword_value(self):
         data = {"comment": "test",
@@ -154,7 +154,7 @@ class SetPostsTest(APITestCase):
                                secure=True,
                                format='json')
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(res.data["error_code"], "DuplicateKeywordError")
+        self.assertEqual(res.data["error_code"], "DuplicateKeyword")
 
     def test_error_too_long_keyword(self):
         # comment length exceeded 30
@@ -171,7 +171,7 @@ class SetPostsTest(APITestCase):
                                secure=True,
                                format='json')
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(res.data["error_code"],"TooLongKeywordError")
+        self.assertEqual(res.data["error_code"],"TooLongKeyword")
 
     def test_error_too_long_comment(self):
         # comment length exceeded 120
@@ -191,7 +191,7 @@ class SetPostsTest(APITestCase):
                                secure=True,
                                format='json')
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(res.data["error_code"],"TooLongCommentError")
+        self.assertEqual(res.data["error_code"],"TooLongComment")
 
     def test_error_authentication_failed(self):
         self.client.logout()

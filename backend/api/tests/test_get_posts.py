@@ -115,7 +115,7 @@ class GetPostsTest(APITestCase):
                        "num": 30},
             format="json")
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(res.data["error_code"], "TooManyRequestPostError")
+        self.assertEqual(res.data["error_code"], "TooManyRequestPost")
 
     # case input string query or invalid number format
     def test_error_bad_query_a(self):
@@ -124,7 +124,7 @@ class GetPostsTest(APITestCase):
                        "num": "world"},
             format="json")
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(res.data["error_code"], "BadQueryRequestError")
+        self.assertEqual(res.data["error_code"], "BadQueryRequest")
 
     # case input minus number
     def test_error_bad_query_b(self):
@@ -133,7 +133,7 @@ class GetPostsTest(APITestCase):
                        "num": 20},
             format="json")
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(res.data["error_code"], "BadQueryRequestError")
+        self.assertEqual(res.data["error_code"], "BadQueryRequest")
 
     # case no input query parameter
     def test_error_bad_query_c(self):
@@ -141,4 +141,4 @@ class GetPostsTest(APITestCase):
             self.url, {},
             format="json")
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(res.data["error_code"], "BadQueryRequestError")
+        self.assertEqual(res.data["error_code"], "BadQueryRequest")
