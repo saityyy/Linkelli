@@ -3,6 +3,7 @@ import styles from "./settings.module.scss"
 import set_user_info from "components/functional/set_user_info"
 import Loading from "components/common/Loading"
 import Button from "components/common/Button"
+import ShowErrorMessage from "components/Settings/ShowErrorMessage"
 import Switch from "components/common/Switch"
 import { useSearchParams } from "react-router-dom"
 import { UserinfoContext } from "App"
@@ -11,7 +12,7 @@ export default function Settings() {
     const [isLoading, setIsLoading] = useState(true)
     const [userInfo, setUserInfo] = useState({ "display_name": "", "anonymous_mode": false })
     const [iconImageURL, setIconImageURL] = useState("/logo192.png")
-    const [errMsg, setErrMsg] = useState("")
+    const [errorMessage, setErrorMessage] = useState("")
     const { myUserinfo, _ } = useContext(UserinfoContext)
     const imageRef = useRef(null)
     const [searchParams, setSearchParams] = useSearchParams()
@@ -33,7 +34,8 @@ export default function Settings() {
         const response = await set_user_info(formData)
         if (response.ok) window.location.href = "/"
         else {
-            setErrMsg(response.body.error_code)
+            setErrorMessage(response.body)
+            window.location.href="#top"
         }
     }
     const changeUserinfoField = (fieldName, targetValue) => {
@@ -83,7 +85,7 @@ export default function Settings() {
         return (
             <div className={styles.settings_container}>
                 <h1>ユーザー設定</h1>
-                <p>{errMsg}</p>
+                <ShowErrorMessage errorMessage={errorMessage}/>
                 <div className={styles.setting_display_name}>
                     <p className={styles.setting_item_name}>ユーザー名</p>
                     <label htmlFor="display_name">

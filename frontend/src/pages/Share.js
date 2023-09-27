@@ -1,6 +1,7 @@
 import { useState } from "react"
 import set_post from "../components/functional/set_post"
 import styles from "./share.module.scss"
+import Button from "../components/common/Button"
 import Keywords from "../components/Share/Keywords"
 import Links from "../components/Share/Links"
 import Comment from "../components/Share/Comment"
@@ -86,12 +87,15 @@ export default function Share() {
                 links={formdata.links}
                 addInput={addInput}
                 reduceInput={reduceInput}
-                onChange={onChange} />
-            <div className={styles.send_post_button}>
-                <p onClick={send_post}>
-                    投稿する
-                </p>
-            </div>
+                onChange={onChange}
+            />
+            <Button
+                href={undefined}
+                className={styles.send_post_button}
+                clickFunc={send_post}
+            >
+                投稿する
+            </Button>
         </div>
     )
 }
