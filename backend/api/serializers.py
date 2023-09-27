@@ -8,35 +8,37 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from django.http import HttpResponse
 from allauth.socialaccount.models import SocialAccount
-from django.contrib.auth.models import User
 from .models import Post, Link, Keyword, UserInfo
 from rest_framework import serializers
 from django.contrib import auth
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
+from django.core.validators import URLValidator, RegexValidator,MinLengthValidator,MaxLengthValidator
+from rest_framework.validators import UniqueValidator
 
 
-class UserSerializer(serializers.ModelSerializer):
-    # user_info = UserInfoSerializer()
-
-    class Meta:
-        model = User
-        fields = [
-            "username"
-        ]
-
-    def create(self, validated_data):
-        ret = super().create(validated_data)
-        return ret
+class CustomListSerializer(serializers.ListSerializer):
+    def validate(self,data):
+        set_data=set()
+        for od in data:
+            if self.field_name=="links":
+                set_data.add(od["link"])
+            elif self.field_name=="keywords":
+                set_data.add(od["keyword"])
+        if len(data) != len(set_data):
+            raise serializers.ValidationError(code="duplicate_value")
+        return data
 
 
 class UserInfoSerializer(serializers.ModelSerializer):
-    #user_info_id = serializers.IntegerField()
-    #user = UserSerializer(many=False, read_only=True)
     display_name = serializers.CharField(
         min_length=1,
         max_length=20,
+        validators=[
+            UniqueValidator(queryset=UserInfo.objects.all()),
+            RegexValidator(regex="^[a-zA-Z0-9_]{1,20}$")
+        ],
         required=True,
         allow_blank=False
     )
@@ -54,7 +56,8 @@ class UserInfoSerializer(serializers.ModelSerializer):
 
 
 class LinkSerializer(serializers.ModelSerializer):
-    link = serializers.CharField(required=False, allow_blank=False)
+    link = serializers.CharField(required=True, allow_blank=False,
+                                 max_length=200,validators=[URLValidator(schemes=["https"])])
     title = serializers.CharField(required=False, allow_blank=False)
     img_url = serializers.CharField(required=False, allow_blank=False)
 
@@ -68,7 +71,7 @@ class LinkSerializer(serializers.ModelSerializer):
 
 
 class KeywordSerializer(serializers.ModelSerializer):
-    keyword = serializers.CharField(required=False, allow_blank=True)
+    keyword = serializers.CharField(max_length=30,required=True, allow_blank=False)
 
     class Meta:
         model = Keyword
@@ -78,9 +81,18 @@ class KeywordSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
-    post_sender = UserInfoSerializer(many=False)
-    links = LinkSerializer(many=True)
-    keywords = KeywordSerializer(many=True)
+    links=CustomListSerializer(
+        child=LinkSerializer(),
+        validators=[
+            MinLengthValidator(1),
+            MaxLengthValidator(5)
+        ])
+    keywords=CustomListSerializer(
+        child=KeywordSerializer(),
+        validators=[
+            MinLengthValidator(1),
+            MaxLengthValidator(5)
+        ])
 
     class Meta:
         model = Post
@@ -92,42 +104,37 @@ class PostSerializer(serializers.ModelSerializer):
             "keywords",
             "comment"
         ]
+        
 
-    def get_post_sender(self,value):
-        return value
+
 
     def create(self, validated_data):
         links_data = validated_data.pop("links")
         keywords_data = validated_data.pop("keywords")
-        display_name = validated_data["post_sender"]["display_name"]
-        validated_data["post_sender"] = UserInfo.objects.get(
-            display_name=display_name)
-
         post_object = Post.objects.create(**validated_data)
         for link_data in links_data:
             link_data["post"] = post_object
-            req_result=fetch_website_info(link_data["link"])
-            if req_result=="InvalidURL":
-                return Response({"error_code": "InvalidURL","invalid_url":link_data["link"]},
-                                status=status.HTTP_400_BAD_REQUEST)
-            title,img_url=req_result
+            title,img_url=fetch_website_info(link_data["link"])
             link_data["img_url"]=img_url
             link_data["title"] =title
             Link.objects.create(**link_data)
         for keyword_data in keywords_data:
             keyword_data["post"] = post_object
             Keyword.objects.create(**keyword_data)
-        return Response({"error_code":""},status=status.HTTP_200_OK)
+        return Response({},status=status.HTTP_200_OK)
 
 
 def fetch_website_info(url):
     try:
         html = requests.get(url).content
+        soup = BeautifulSoup(html, 'html.parser')
+        title = soup.find("title").get_text()
     except:
-        return "InvalidURL"
-    soup = BeautifulSoup(html, 'html.parser')
-    title = soup.find("title").get_text()
+        title="Not Found"
     up = urlparse(url)
     img_url = ("https://www.google.com/s2/favicons?domain={}://{}".format(
         up.scheme, up.hostname))
+    res=requests.get(img_url)
+    if res.status_code==404:
+        img_url="/app_static/images/alt_site_image.png"
     return (title,img_url)

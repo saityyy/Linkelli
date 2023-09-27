@@ -39,6 +39,10 @@ DATABASES = {
         "PASSWORD": "linkelli",
         "HOST": "db",
         "PORT": "3306",
+    },
+    "test":{
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": "mydatabase",
     }
 }
 

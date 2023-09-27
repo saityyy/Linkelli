@@ -3,7 +3,6 @@ import { useState, useEffect } from "react"
 import Post from "../components/common/Post";
 import styles from "./home.module.scss"
 import get_post from "../components/functional/get_post";
-import get_keyword_post from "../components/functional/get_keyword_post";
 import { useSearchParams } from "react-router-dom"
 import Loading from "../components/common/Loading"
 
@@ -14,13 +13,8 @@ export default function Home() {
     const [page, setPage] = useState(0);
     const fetchPost = async (start) => {
         let data = []
-        if (searchParams.get("keyword")) {
-            data = await get_keyword_post(
-                searchParams.get("keyword"), start, add_page)
-        }
-        else {
-            data = await get_post(start, add_page)
-        }
+        const keyword=searchParams.get("keyword")
+        data = await get_post(keyword,start, add_page)
         setPosts((prev) => {
             //useEffectが二回呼ばれるため（開発時）,同じ投稿が追加されるのを防ぐ
             const prevJSON = JSON.stringify(prev.slice(-data.length))

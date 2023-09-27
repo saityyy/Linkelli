@@ -3,4 +3,5 @@
 .venv
 /linkelli/app_static/
 /api/static/images/user_icons/
+/api/migrations/
 __pycache__

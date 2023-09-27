@@ -1,6 +1,6 @@
 from django.db import models
-from allauth.socialaccount.models import SocialAccount
 from django.contrib.auth.models import User
+
 
 
 class UserInfo(models.Model):
@@ -37,11 +37,11 @@ class Link(models.Model):
         Post,
         related_name="links",
         on_delete=models.CASCADE)
-    link = models.CharField(max_length=300)
+    link = models.CharField(max_length=200)
     title = models.CharField(max_length=300, default="")
     img_url = models.CharField(
         max_length=300,
-        default="https://static.djangoproject.com/img/icon-touch.e4872c4da341.png")
+        default="/app_static/images/alt_site_image.png")
 
     class Meta:
         unique_together = (("link", "post"))
