@@ -1,15 +1,14 @@
-import os
 from pathlib import Path
 import environ
 
-env=environ.Env()
+env = environ.Env()
 env.read_env(".env")
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 DEBUG = True
 
-SECRET_KEY = 'django-insecure-3o%$$qsrf&g-v_5b94acw_in8jqwx!7r2d3%i&(nk7fk6=9eus'
-ORIGIN_NAME="http://127.0.0.1"
+SECRET_KEY = 'django-insecure-3o%$$qsrf&g-v_5b94acw_in8jqwx!7r2d3%i&(nk7fk6=9eus'  # noqa
+ORIGIN_NAME = "http://127.0.0.1"
 ALLOWED_HOSTS = ["*"]
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -40,12 +39,11 @@ DATABASES = {
         "HOST": "db",
         "PORT": "3306",
     },
-    "test":{
+    "test": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": "mydatabase",
     }
 }
-
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = "None"
 ACCESS_CONTROL_ALLOW_ORIGIN = ["*"]
@@ -60,5 +58,3 @@ CORS_ORIGIN_WHITELIST = []
 CSRF_TRUSTED_ORIGINS = [
     ORIGIN_NAME
 ]
-
-

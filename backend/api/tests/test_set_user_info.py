@@ -1,14 +1,8 @@
 import random
-from django.urls import reverse, include, path
+from django.urls import reverse
 from rest_framework import status
-from api.views import PostViewSet
 from rest_framework.test import APITestCase
-from api.models import Post, UserInfo
-from api import views
 from django.contrib.auth.models import User
-from faker import Faker
-from rest_framework import status
-from django.core.files.storage.filesystem import FileSystemStorage
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 random.seed(42)
@@ -36,8 +30,8 @@ class SetUserInfoTest(APITestCase):
         res = self.client.post(
             self.url, data=user_info_data, secure=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data["display_name"],"test")
-        self.assertEqual(res.data["anonymous_mode"],False)
+        self.assertEqual(res.data["display_name"], "test")
+        self.assertEqual(res.data["anonymous_mode"], False)
 
     def test_success_update_user_info(self):
         icon_path = "./api/tests/icon_images/linkelli_logo.png"
@@ -60,8 +54,8 @@ class SetUserInfoTest(APITestCase):
         }
         res = self.client.post(
             self.url, data=update_user_info_data)
-        self.assertEqual(res.data["display_name"],"updated")
-        self.assertEqual(res.data["anonymous_mode"],True)
+        self.assertEqual(res.data["display_name"], "updated")
+        self.assertEqual(res.data["anonymous_mode"], True)
 
     def test_error_authentication_failed(self):
         self.client.logout()
@@ -130,7 +124,7 @@ class SetUserInfoTest(APITestCase):
         _ = self.client.post(
             self.url, data=user_info_data)
         self.client.logout()
-        self.client.force_authenticate(user= self.user)
+        self.client.force_authenticate(user=self.user)
         res = self.client.post(
             self.url, data=user_info_data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)

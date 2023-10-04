@@ -2,10 +2,8 @@ import random
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from api.models import Post, UserInfo, Link, Keyword
+from api.models import UserInfo
 from django.contrib.auth.models import User
-from faker import Faker
-from rest_framework import status
 
 random.seed(42)
 
@@ -16,7 +14,7 @@ class SetPostsTest(APITestCase):
         data = {
             "display_name": "test",
             "icon_url": "https://icon_url.png",
-            "user":user,
+            "user": user,
             "anonymous_mode": False
         }
         _ = UserInfo.objects.create(**data)
@@ -26,12 +24,10 @@ class SetPostsTest(APITestCase):
     def test_success_set_posts_a(self):
         data = {"comment": "test",
                 "links": [
-                    {
-                        "link": "https://github.com",
-                        "link": "https://qiita.com",  
-                        "link": "https://zenn.dev",  
-                        "link": "https://stackoverflow.com"
-                    }
+                    {"link": "https://github.com"},
+                    {"link": "https://qiita.com"},
+                    {"link": "https://zenn.dev"},
+                    {"link": "https://stackoverflow.com"}
                 ],
                 "keywords": [
                     {
@@ -75,7 +71,7 @@ class SetPostsTest(APITestCase):
                     {"link": "https://github.com"},
                 ],
                 "keywords": [
-                    {"keyword":"github"}
+                    {"keyword": "github"}
                 ]
                 }
         res = self.client.post(self.url,
@@ -88,7 +84,7 @@ class SetPostsTest(APITestCase):
     def test_error_too_many_keywords(self):
         data = {"comment": "test",
                 "links": [
-                    {"link":"https://github.com"}
+                    {"link": "https://github.com"}
                 ],
                 "keywords": [
                     {"keyword": "github"},
@@ -109,7 +105,7 @@ class SetPostsTest(APITestCase):
     def test_error_not_https_link(self):
         data = {"comment": "test",
                 "links": [
-                    {"link":"http://github.com"}
+                    {"link": "http://github.com"}
                 ],
                 "keywords": [
                     {"keyword": "github"},
@@ -125,8 +121,8 @@ class SetPostsTest(APITestCase):
     def test_error_same_link_value(self):
         data = {"comment": "test",
                 "links": [
-                    {"link":"https://github.com"},
-                    {"link":"https://github.com"}
+                    {"link": "https://github.com"},
+                    {"link": "https://github.com"}
                 ],
                 "keywords": [
                     {"keyword": "github"},
@@ -142,7 +138,7 @@ class SetPostsTest(APITestCase):
     def test_error_same_keyword_value(self):
         data = {"comment": "test",
                 "links": [
-                    {"link":"https://github.com"}
+                    {"link": "https://github.com"}
                 ],
                 "keywords": [
                     {"keyword": "github"},
@@ -158,9 +154,9 @@ class SetPostsTest(APITestCase):
 
     def test_error_too_long_keyword(self):
         # comment length exceeded 30
-        data = {"comment":"test comment", 
+        data = {"comment": "test comment",
                 "links": [
-                    {"link":"https://github.com"}
+                    {"link": "https://github.com"}
                 ],
                 "keywords": [
                     {"keyword": "_123456789_123456789_123456789..."}
@@ -171,7 +167,7 @@ class SetPostsTest(APITestCase):
                                secure=True,
                                format='json')
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(res.data["error_code"],"TooLongKeyword")
+        self.assertEqual(res.data["error_code"], "TooLongKeyword")
 
     def test_error_too_long_comment(self):
         # comment length exceeded 120
@@ -180,18 +176,18 @@ class SetPostsTest(APITestCase):
                             123456789_123456789_123456789_123456789\
                             continue..."),
                 "links": [
-                    {"link":"https://github.com"}
-                ],
-                "keywords": [
+                    {"link": "https://github.com"}
+        ],
+            "keywords": [
                     {"keyword": "github"}
-                ]
-                }
+        ]
+        }
         res = self.client.post(self.url,
                                data,
                                secure=True,
                                format='json')
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(res.data["error_code"],"TooLongComment")
+        self.assertEqual(res.data["error_code"], "TooLongComment")
 
     def test_error_authentication_failed(self):
         self.client.logout()

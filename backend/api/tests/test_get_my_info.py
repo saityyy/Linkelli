@@ -1,21 +1,17 @@
 import random
-from django.urls import reverse, include, path
+from django.urls import reverse
 from rest_framework import status
-from api.views import PostViewSet
 from rest_framework.test import APITestCase
-from api.models import Post, UserInfo
-from api import views
+from api.models import UserInfo
 from django.contrib.auth.models import User
-from faker import Faker
-from rest_framework import status
 
 random.seed(42)
 
 
 class GetMyUserInfoTest(APITestCase):
     def setUp(self):
-        user = User.objects.create_user("test")#userinfo作成済み
-        self.user2 = User.objects.create_user("test2")#userinfo未作成
+        user = User.objects.create_user("test")  # userinfo作成済み
+        self.user2 = User.objects.create_user("test2")  # userinfo未作成
         user_info_data = {
             "display_name": "test",
             "icon_url": "/static/images/user_icons/anonymous/icon.png",
@@ -45,4 +41,3 @@ class GetMyUserInfoTest(APITestCase):
         res = self.client.get(
             self.url, format="json")
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
-

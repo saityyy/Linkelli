@@ -1,13 +1,9 @@
 import random
-from django.urls import reverse, include, path
+from django.urls import reverse
 from rest_framework import status
-from api.views import PostViewSet
 from rest_framework.test import APITestCase
-from api.models import Post, UserInfo
-from api import views
+from api.models import UserInfo
 from django.contrib.auth.models import User
-from faker import Faker
-from rest_framework import status
 
 random.seed(42)
 
@@ -33,27 +29,29 @@ class GetUserInfoTest(APITestCase):
         self.client.force_authenticate(user=user)
 
     def test_success_get_user_info_a(self):
-        url = reverse("api:user-get_user_info",kwargs={"pk":"test"})
+        url = reverse("api:user-get_user_info", kwargs={"pk": "test"})
         res = self.client.get(
             url, format="json")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
     def test_error_authentication_failed(self):
         self.client.logout()
-        url = reverse("api:user-get_user_info",kwargs={"pk":"test"})
+        url = reverse("api:user-get_user_info", kwargs={"pk": "test"})
         res = self.client.get(
             url, format="json")
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_error_not_exist_user(self):
-        url = reverse("api:user-get_user_info",kwargs={"pk":"not_exist_user"})
+        url = reverse("api:user-get_user_info",
+                      kwargs={"pk": "not_exist_user"})
         res = self.client.get(
             url, format="json")
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(res.data["error_code"], "UserNotExist")
 
     def test_error_not_show_anonymous_user(self):
-        url = reverse("api:user-get_user_info",kwargs={"pk":"anonymous_user"})
+        url = reverse("api:user-get_user_info",
+                      kwargs={"pk": "anonymous_user"})
         res = self.client.get(
             url, format="json")
         self.assertEqual(res.data["error_code"], "UserNotExist")

@@ -1,16 +1,16 @@
-import os
 from pathlib import Path
 import environ
 
-env=environ.Env()
+env = environ.Env()
 env.read_env(".env")
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 DEBUG = False
 
+
 SECRET_KEY = env("DJANGO_SECRET_KEY")
-ORIGIN_NAME="https://linkelli.net"
-ALLOWED_HOSTS = ["linkelli.net","django"]
+ORIGIN_NAME = "https://linkelli.net"
+ALLOWED_HOSTS = ["linkelli.net", "django"]
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -41,11 +41,9 @@ DATABASES = {
 }
 ACCOUNT_LOGOUT_REDIRECT_URL = ORIGIN_NAME
 CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE=True
+SESSION_COOKIE_SECURE = True
 ACCESS_CONTROL_ALLOW_ORIGIN = [ORIGIN_NAME]
 ACCESS_CONTROL_ALLOW_METHOD = ["*"]
 CSRF_TRUSTED_ORIGINS = [
     ORIGIN_NAME
 ]
-
-

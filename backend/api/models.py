@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-
 class UserInfo(models.Model):
     user_info_id = models.BigAutoField(primary_key=True)
     display_name = models.CharField(max_length=30, unique=True)
@@ -14,7 +13,7 @@ class UserInfo(models.Model):
 
     def __str__(self):
         return str(self.display_name)
-    
+
 
 class Post(models.Model):
     post_id = models.BigAutoField(primary_key=True)

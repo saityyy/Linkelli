@@ -1,7 +1,7 @@
-from .base import *
-from .development import *
+from .development import *  # noqa
+from .development import DATABASES
 
-DATABASES["default"]={
+DATABASES["default"] = {
     "ENGINE": "django.db.backends.sqlite3",
     "NAME": "test",
 }

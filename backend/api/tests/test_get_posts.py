@@ -2,10 +2,9 @@ import random
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from api.models import Post,Link,Keyword,UserInfo
+from api.models import Post, Link, Keyword, UserInfo
 from django.contrib.auth.models import User
 from faker import Faker
-from rest_framework import status
 
 random.seed(42)
 
@@ -16,19 +15,26 @@ class GetPostsTest(APITestCase):
         for i in range(10):
             name = "{}_{}".format(i + 1, fake.first_name())
             user = User.objects.create_user(name)
-            data = { 
+            data = {
                 "display_name": name,
                 "icon_url": "https://icon_url.png",
                 "user": user,
-                "anonymous_mode": [True,False][i%2]
+                "anonymous_mode": [True, False][i % 2]
             }
             user_info = UserInfo.objects.create(**data)
-            for post_num in range(10): 
+            for post_num in range(10):
                 comment = "test_comment"
-                post=Post.objects.create(post_sender=user_info, comment=comment)
+                post = Post.objects.create(
+                    post_sender=user_info, comment=comment)
                 for i in range(2):
-                    Link.objects.create(post=post,link="https://test_{}".format(i),title="test")
-                    Keyword.objects.create(post=post,keyword="test_{}".format(i))
+                    Link.objects.create(
+                        post=post,
+                        link="https://test_{}".format(i), title="test"
+                    )
+                    Keyword.objects.create(
+                        post=post,
+                        keyword="test_{}".format(i)
+                    )
         self.post_sum = len(Post.objects.all())
         self.url = reverse("api:post-get_post")
         self.client.force_authenticate(user=user)
@@ -65,28 +71,28 @@ class GetPostsTest(APITestCase):
         res = self.client.get(
             self.url, {"start": 0,
                        "num": 20,
-                       "keyword":"test_0"},
+                       "keyword": "test_0"},
             format="json")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data),20)
-    
+        self.assertEqual(len(res.data), 20)
+
     # check all posts. the num of anonymous and public user must be the same.
     def test_success_check_public_or_anonymous(self):
-        public_count,anonymous_count=(0,0)
-        for i in range(0,self.post_sum,20):
+        public_count, anonymous_count = (0, 0)
+        for i in range(0, self.post_sum, 20):
             res = self.client.get(
                 self.url, {"start": i,
-                        "num": 20},
+                           "num": 20},
                 format="json")
             for r in res.data:
-                if r["post_sender"]["display_name"]=="anonymous_user":
-                    anonymous_count+=1
+                if r["post_sender"]["display_name"] == "anonymous_user":
+                    anonymous_count += 1
                 else:
-                    public_count+=1
+                    public_count += 1
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 20)
-        self.assertEqual(public_count,anonymous_count)
+        self.assertEqual(public_count, anonymous_count)
 
     def test_success_check_post_sender_field(self):
         res = self.client.get(
@@ -94,13 +100,12 @@ class GetPostsTest(APITestCase):
                        "num": 20},
             format="json")
         for r in res.data:
-            self.assertIs(type(r["post_sender"]["anonymous_mode"]),bool)
+            self.assertIs(type(r["post_sender"]["anonymous_mode"]), bool)
             if r["post_sender"]["anonymous_mode"]:
-                self.assertEqual(r["post_sender"]["display_name"], "anonymous_user")
-
+                self.assertEqual(
+                    r["post_sender"]["display_name"], "anonymous_user")
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-
 
     def test_error_authentication_failed(self):
         self.client.logout()

@@ -1,13 +1,14 @@
-import os ,sys
+import os
+import sys
 
-from .base import *
-if os.environ["DJANGO_MODE"]=="development":
+from .base import *  # noqa
+
+if os.environ["DJANGO_MODE"] == "development":
     print("development")
-    from .development import *
+    from .development import *  # noqa
 else:
     print("production")
-    from .production import *
-
-if sys.argv[1]=="test":
+    from .production import *  # noqa
+if sys.argv[1] == "test":
     print("test")
-    from .test import *
+    from .test import *  # noqa
