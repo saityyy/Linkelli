@@ -9,9 +9,9 @@ LinkelliはWebサイトのリンクを通して知識や情報を共有するこ
 Google、またはGithubアカウントからでのログインが可能です。  
 ## 開発環境
 開発環境は以下のとおりです。  
-- フロントエンド：React
-- バックエンド：Django
-- データベース：MySQL
+- フロントエンド：React(nodejs:18.17.1, React:18.2.0)
+- バックエンド：Django(python:3.11.5, Django:4.2.3)
+- データベース：MySQL 8.1.0
 - Webサーバー：Nginx
 - 環境構築：Docker  
 

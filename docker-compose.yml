@@ -27,12 +27,13 @@ services:
           "-u",
           "root"
         ]
-      interval: 3s
-      timeout: 1s
+      interval: 5s
+      timeout: 5s
       retries: 3
-      start_period: 1s
+      start_period: 30s
     volumes:
       - ./dockerfiles/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+      - mysql_volume:/var/lib/mysql
     networks:
       - network
 
@@ -100,6 +101,8 @@ volumes:
     name: https-portal-data
   django_static_data:
     name: django_static_data
+  mysql_volume:
+    name: mysql_volume
 
 networks:
   network:
